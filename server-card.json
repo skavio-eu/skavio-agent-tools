@@ -1,0 +1,115 @@
+{
+  "serverInfo": {
+    "name": "Skavio Paid Micro-APIs",
+    "version": "1.0.0"
+  },
+  "authentication": {
+    "required": false
+  },
+  "tools": [
+    {
+      "name": "skavio_catalog",
+      "description": "Free discovery of Skavio paid MCP tools, prices, and networks. No access to customer data.",
+      "inputSchema": {
+        "properties": {},
+        "title": "skavio_catalogArguments",
+        "type": "object"
+      }
+    },
+    {
+      "name": "verify_native_usdc",
+      "description": "Verify a completed native Circle USDC transfer on Base, Polygon, Arbitrum, Optimism, Ethereum, Avalanche or Solana. $0.02 USDC on Base via x402.",
+      "inputSchema": {
+        "properties": {
+          "tx_hash": {
+            "title": "Tx Hash",
+            "type": "string"
+          },
+          "network": {
+            "default": "base",
+            "title": "Network",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tx_hash"
+        ],
+        "title": "verify_native_usdcArguments",
+        "type": "object"
+      }
+    },
+    {
+      "name": "match_native_usdc_payment",
+      "description": "Match EXACT final native USDC transfer by public recipient and six-decimal amount on any supported chain; includes strict finality. $0.03 USDC on Base via x402.",
+      "inputSchema": {
+        "properties": {
+          "tx_hash": {
+            "title": "Tx Hash",
+            "type": "string"
+          },
+          "recipient": {
+            "title": "Recipient",
+            "type": "string"
+          },
+          "amount": {
+            "title": "Amount",
+            "type": "string"
+          },
+          "network": {
+            "default": "base",
+            "title": "Network",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tx_hash",
+          "recipient",
+          "amount"
+        ],
+        "title": "match_native_usdc_paymentArguments",
+        "type": "object"
+      }
+    },
+    {
+      "name": "usdc_transfer_evidence_pdf",
+      "description": "Return base64-encoded PDF containing public blockchain evidence for a native Circle USDC transfer. NOT an invoice. $0.05 USDC on Base via x402.",
+      "inputSchema": {
+        "properties": {
+          "tx_hash": {
+            "title": "Tx Hash",
+            "type": "string"
+          },
+          "network": {
+            "default": "base",
+            "title": "Network",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tx_hash"
+        ],
+        "title": "usdc_transfer_evidence_pdfArguments",
+        "type": "object"
+      }
+    },
+    {
+      "name": "domain_dns_tls_audit",
+      "description": "Bounded DNS and TLS certificate audit for a single PUBLIC business hostname. Checks public IPs, TLS validity, TLS version and days until certificate expiry. No page scraping, no user-provided URLs, no private IP probing. $0.05 USDC on Base via x402.",
+      "inputSchema": {
+        "properties": {
+          "domain": {
+            "title": "Domain",
+            "type": "string"
+          }
+        },
+        "required": [
+          "domain"
+        ],
+        "title": "domain_dns_tls_auditArguments",
+        "type": "object"
+      }
+    }
+  ],
+  "resources": [],
+  "prompts": []
+}
