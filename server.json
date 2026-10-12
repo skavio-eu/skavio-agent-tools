@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "eu.skavio/paid-micro-apis",
+  "title": "Skavio USDC Paid Micro-APIs",
+  "description": "x402 USDC-paid MCP tools: 7-chain transaction checks, PDF evidence and DNS/TLS audits.",
+  "version": "1.0.0",
+  "websiteUrl": "https://www.skavio.eu/x402/",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://www.skavio.eu/mcp"
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/skavio-eu/skavio-agent-tools",
+    "source": "github"
+  }
+}
