@@ -20,4 +20,4 @@ Three HTTP routes are advertised: `/x402/v1/usdc/verify`, `/x402/v1/usdc/match`,
 
 Public unsigned challenge and discovery checks do not establish successful funded settlement or profitability. No revenue claim is made. PDF/OCR/invoice/audio Processing API integration is under development and is not offered through this MCP catalog. The separate Processing API developer kit is https://github.com/skavio-eu/skavio-processing-api.
 
-Registry submissions are tracked separately; the presence of server.json does not prove directory acceptance. Prices and capabilities may change; inspect current server responses before authorizing payment.
+Published in the official MCP Registry as `eu.skavio/paid-micro-apis`, version `1.0.0`: https://registry.modelcontextprotocol.io/v0.1/servers/eu.skavio%2Fpaid-micro-apis/versions/1.0.0. Other directory registrations are tracked separately. Prices and capabilities may change; inspect current server responses before authorizing payment.
