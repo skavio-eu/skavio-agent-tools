@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "skavio-paid-tools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://www.skavio.eu/mcp"
+      ]
+    }
+  }
+}
