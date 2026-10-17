@@ -1,18 +1,57 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "eu.skavio/paid-micro-apis",
-  "title": "Skavio USDC Paid Micro-APIs",
-  "description": "x402 USDC-paid MCP tools: 7-chain transaction checks, PDF evidence and DNS/TLS audits.",
-  "version": "1.0.0",
+  "description": "USDC transfer verification, exact payment matching, blockchain PDF evidence and DNS/TLS; Base x402.",
+  "title": "Skavio USDC Payment Verification & Proof MCP",
+  "version": "1.1.1",
   "websiteUrl": "https://www.skavio.eu/x402/",
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://www.skavio.eu/mcp"
+      "url": "https://www.skavio.eu/mcp",
+      "headers": [
+        {
+          "description": "Optional Agent Tools Bearer API key for tenant processing relays only. Public blockchain/domain tools require x402 payment metadata, not this key.",
+          "format": "string",
+          "isSecret": true,
+          "name": "Authorization"
+        }
+      ]
     }
   ],
   "repository": {
     "url": "https://github.com/skavio-eu/skavio-agent-tools",
     "source": "github"
+  },
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "documentation": "https://www.skavio.eu/x402/docs/",
+      "tags": [
+        "usdc",
+        "x402",
+        "payment-verification",
+        "payment-reconciliation",
+        "blockchain-evidence"
+      ],
+      "payment": {
+        "network": "eip155:8453",
+        "asset": "native Circle USDC",
+        "verify": "0.02 USDC",
+        "match": "0.03 USDC",
+        "evidence_pdf": "0.05 USDC",
+        "domain_audit": "0.05 USDC",
+        "client_requirement": "x402 MCP v2 wallet extension; params._meta[x402/payment]"
+      },
+      "inspectionNetworks": [
+        "base",
+        "polygon",
+        "arbitrum",
+        "optimism",
+        "ethereum",
+        "avalanche",
+        "solana"
+      ],
+      "limitations": "Public RPC latency/finality vary. No custody. PDF evidence is not an invoice. Separate authenticated processing relays depend on company authorization and backend availability."
+    }
   }
 }
