@@ -1,64 +1,339 @@
 {
   "serverInfo": {
-    "name": "Skavio Paid Micro-APIs",
-    "version": "1.0.0"
+    "name": "Skavio USDC Payment Verification & Proof MCP",
+    "version": "1.1.1"
   },
   "authentication": {
     "required": false
   },
   "tools": [
     {
+      "name": "skavio_launch_status",
+      "title": "Launch status",
+      "description": "Free production availability status, including explicitly disabled processing functions. No execution or charge. Returns enabled/admission flags and unverified funded-execution/margin status; activation is not funded acceptance.",
+      "inputSchema": {
+        "properties": {},
+        "title": "skavio_launch_statusArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "type": "object",
+          "properties": {
+            "release": {
+              "type": "string"
+            },
+            "scope": {
+              "type": "string"
+            },
+            "async_processing": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "admission": {
+                  "type": "string"
+                },
+                "tools": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "payment_execution_verified": {
+              "type": "boolean"
+            },
+            "margin_verified": {
+              "type": "boolean"
+            },
+            "verification": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "release",
+            "scope",
+            "async_processing",
+            "payment_execution_verified",
+            "margin_verified",
+            "verification"
+          ]
+        },
+        "io.skavio/result-encoding": "Free discovery: JSON result in content. Authenticated relays: JSON in structuredContent and text. Error isError=true; never infer delivery from admission."
+      }
+    },
+    {
       "name": "skavio_catalog",
-      "description": "Free discovery of Skavio paid MCP tools, prices, and networks. No access to customer data.",
+      "title": "Catalog",
+      "description": "Free discovery of Skavio paid MCP tools, prices, and networks. No access to customer data. Returns four paid prices in USDC, inspection networks, separate processing authentication and activation limits. No call submits a job or spends funds.",
       "inputSchema": {
         "properties": {},
         "title": "skavio_catalogArguments",
         "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "type": "object",
+          "properties": {
+            "provider": {
+              "type": "string"
+            },
+            "endpoint": {
+              "type": "string",
+              "format": "uri"
+            },
+            "payment": {
+              "type": "object"
+            },
+            "inspection_networks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "tools": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "price_usdc": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "processing_tools": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "launch": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "provider",
+            "endpoint",
+            "payment",
+            "tools",
+            "processing_tools",
+            "launch"
+          ]
+        },
+        "io.skavio/result-encoding": "Free discovery: JSON result in content. Authenticated relays: JSON in structuredContent and text. Error isError=true; never infer delivery from admission."
       }
     },
     {
       "name": "verify_native_usdc",
+      "title": "Verify native USDC transaction",
       "description": "Verify a completed native Circle USDC transfer on Base, Polygon, Arbitrum, Optimism, Ethereum, Avalanche or Solana. $0.02 USDC on Base via x402.",
       "inputSchema": {
+        "type": "object",
         "properties": {
           "tx_hash": {
-            "title": "Tx Hash",
-            "type": "string"
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 100,
+            "pattern": "^(?:0x[0-9a-fA-F]{64}|[1-9A-HJ-NP-Za-km-z]{64,88})$",
+            "description": "Public transaction to inspect: 0x plus 64 hex characters for EVM; base58 64-byte Solana signature. Must match network."
           },
           "network": {
+            "type": "string",
+            "enum": [
+              "base",
+              "polygon",
+              "arbitrum",
+              "optimism",
+              "ethereum",
+              "avalanche",
+              "solana"
+            ],
             "default": "base",
-            "title": "Network",
-            "type": "string"
+            "description": "Blockchain inspected; the separate API payment always settles native USDC on Base."
           }
         },
         "required": [
           "tx_hash"
         ],
-        "title": "verify_native_usdcArguments",
-        "type": "object"
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "type": "object",
+          "properties": {
+            "network": {
+              "type": "string",
+              "enum": [
+                "base",
+                "polygon",
+                "arbitrum",
+                "optimism",
+                "ethereum",
+                "avalanche",
+                "solana"
+              ],
+              "default": "base",
+              "description": "Blockchain inspected; the separate API payment always settles native USDC on Base."
+            },
+            "chain_id": {
+              "type": [
+                "integer",
+                "string"
+              ]
+            },
+            "tx_hash": {
+              "type": "string"
+            },
+            "asset": {
+              "type": "string"
+            },
+            "token_contract": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "confirmed",
+                "waiting_confirmations"
+              ]
+            },
+            "confirmations": {
+              "type": [
+                "integer",
+                "string"
+              ]
+            },
+            "required_confirmations": {
+              "type": [
+                "integer",
+                "string"
+              ]
+            },
+            "block_number": {
+              "type": "integer"
+            },
+            "block_timestamp": {
+              "type": "integer"
+            },
+            "checked_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "transfers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "string"
+                  },
+                  "to": {
+                    "type": "string"
+                  },
+                  "amount_usdc": {
+                    "type": "string"
+                  },
+                  "amount_atomic": {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                  },
+                  "log_index": {
+                    "type": "integer"
+                  },
+                  "instruction_index": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "from",
+                  "to",
+                  "amount_usdc",
+                  "amount_atomic"
+                ]
+              }
+            }
+          },
+          "required": [
+            "network",
+            "tx_hash",
+            "status",
+            "transfers",
+            "checked_at"
+          ]
+        },
+        "io.skavio/result-encoding": "Success JSON in content text; unpaid PaymentRequired in structuredContent. Preserve params._meta[x402/payment] on retry.",
+        "io.skavio/input-example": {
+          "tx_hash": "0x98809948204426c574b6f0aabdec03baa996b5c43ce28cc9ca704fa5d07e592e",
+          "network": "base"
+        }
       }
     },
     {
       "name": "match_native_usdc_payment",
+      "title": "Match exact USDC recipient and amount",
       "description": "Match EXACT final native USDC transfer by public recipient and six-decimal amount on any supported chain; includes strict finality. $0.03 USDC on Base via x402.",
       "inputSchema": {
+        "type": "object",
         "properties": {
           "tx_hash": {
-            "title": "Tx Hash",
-            "type": "string"
-          },
-          "recipient": {
-            "title": "Recipient",
-            "type": "string"
-          },
-          "amount": {
-            "title": "Amount",
-            "type": "string"
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 100,
+            "pattern": "^(?:0x[0-9a-fA-F]{64}|[1-9A-HJ-NP-Za-km-z]{64,88})$",
+            "description": "Public transaction to inspect: 0x plus 64 hex characters for EVM; base58 64-byte Solana signature. Must match network."
           },
           "network": {
+            "type": "string",
+            "enum": [
+              "base",
+              "polygon",
+              "arbitrum",
+              "optimism",
+              "ethereum",
+              "avalanche",
+              "solana"
+            ],
             "default": "base",
-            "title": "Network",
-            "type": "string"
+            "description": "Blockchain inspected; the separate API payment always settles native USDC on Base."
+          },
+          "recipient": {
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 44,
+            "pattern": "^(?:0x[0-9a-fA-F]{40}|[1-9A-HJ-NP-Za-km-z]{32,44})$",
+            "description": "Expected recipient: EVM 0x address or Solana owner wallet, not a token account."
+          },
+          "amount": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 24,
+            "pattern": "^(?!0+(?:\\.0+)?$)[0-9]{1,17}(?:\\.[0-9]{1,6})?$",
+            "description": "Positive exact USDC decimal string, at most six decimal places. Never a floating point number."
           }
         },
         "required": [
@@ -66,40 +341,224 @@
           "recipient",
           "amount"
         ],
-        "title": "match_native_usdc_paymentArguments",
-        "type": "object"
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "type": "object",
+          "properties": {
+            "network": {
+              "type": "string",
+              "enum": [
+                "base",
+                "polygon",
+                "arbitrum",
+                "optimism",
+                "ethereum",
+                "avalanche",
+                "solana"
+              ],
+              "default": "base",
+              "description": "Blockchain inspected; the separate API payment always settles native USDC on Base."
+            },
+            "chain_id": {
+              "type": [
+                "integer",
+                "string"
+              ]
+            },
+            "tx_hash": {
+              "type": "string"
+            },
+            "asset": {
+              "type": "string"
+            },
+            "token_contract": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "confirmed",
+                "waiting_confirmations"
+              ]
+            },
+            "confirmations": {
+              "type": [
+                "integer",
+                "string"
+              ]
+            },
+            "required_confirmations": {
+              "type": [
+                "integer",
+                "string"
+              ]
+            },
+            "block_number": {
+              "type": "integer"
+            },
+            "block_timestamp": {
+              "type": "integer"
+            },
+            "checked_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "matched": {
+              "type": "boolean",
+              "description": "True only for exactly one matching transfer after required finality."
+            },
+            "recipient": {
+              "type": "string"
+            },
+            "amount_usdc": {
+              "type": "string"
+            },
+            "matching_transfers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "string"
+                  },
+                  "to": {
+                    "type": "string"
+                  },
+                  "amount_usdc": {
+                    "type": "string"
+                  },
+                  "amount_atomic": {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                  },
+                  "log_index": {
+                    "type": "integer"
+                  },
+                  "instruction_index": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "from",
+                  "to",
+                  "amount_usdc",
+                  "amount_atomic"
+                ]
+              }
+            }
+          },
+          "required": [
+            "network",
+            "tx_hash",
+            "status",
+            "matched",
+            "recipient",
+            "amount_usdc",
+            "matching_transfers",
+            "checked_at"
+          ]
+        },
+        "io.skavio/result-encoding": "Success JSON in content text; unpaid PaymentRequired in structuredContent. Preserve params._meta[x402/payment] on retry.",
+        "io.skavio/input-example": {
+          "tx_hash": "0x98809948204426c574b6f0aabdec03baa996b5c43ce28cc9ca704fa5d07e592e",
+          "network": "base",
+          "recipient": "0x51c72848c68a965f66fa7a88855f9f7784502a7f",
+          "amount": "2458.670422"
+        }
       }
     },
     {
       "name": "usdc_transfer_evidence_pdf",
+      "title": "USDC blockchain transfer evidence PDF",
       "description": "Return base64-encoded PDF containing public blockchain evidence for a native Circle USDC transfer. NOT an invoice. $0.05 USDC on Base via x402.",
       "inputSchema": {
+        "type": "object",
         "properties": {
           "tx_hash": {
-            "title": "Tx Hash",
-            "type": "string"
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 100,
+            "pattern": "^(?:0x[0-9a-fA-F]{64}|[1-9A-HJ-NP-Za-km-z]{64,88})$",
+            "description": "Public transaction to inspect: 0x plus 64 hex characters for EVM; base58 64-byte Solana signature. Must match network."
           },
           "network": {
+            "type": "string",
+            "enum": [
+              "base",
+              "polygon",
+              "arbitrum",
+              "optimism",
+              "ethereum",
+              "avalanche",
+              "solana"
+            ],
             "default": "base",
-            "title": "Network",
-            "type": "string"
+            "description": "Blockchain inspected; the separate API payment always settles native USDC on Base."
           }
         },
         "required": [
           "tx_hash"
         ],
-        "title": "usdc_transfer_evidence_pdfArguments",
-        "type": "object"
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "type": "string"
+            },
+            "media_type": {
+              "const": "application/pdf"
+            },
+            "bytes": {
+              "type": "integer",
+              "maximum": 16384
+            },
+            "pdf_base64": {
+              "type": "string",
+              "contentEncoding": "base64"
+            }
+          },
+          "required": [
+            "filename",
+            "media_type",
+            "bytes",
+            "pdf_base64"
+          ]
+        },
+        "io.skavio/result-encoding": "Success JSON in content text; unpaid PaymentRequired in structuredContent. Preserve params._meta[x402/payment] on retry.",
+        "io.skavio/input-example": {
+          "tx_hash": "0x98809948204426c574b6f0aabdec03baa996b5c43ce28cc9ca704fa5d07e592e",
+          "network": "base"
+        }
       }
     },
     {
       "name": "domain_dns_tls_audit",
-      "description": "Bounded DNS and TLS certificate audit for a single PUBLIC business hostname. Checks public IPs, TLS validity, TLS version and days until certificate expiry. No page scraping, no user-provided URLs, no private IP probing. $0.05 USDC on Base via x402.",
+      "title": "Public domain DNS and TLS audit",
+      "description": "Bounded DNS and TLS certificate audit for a single PUBLIC business hostname. Checks public IPs, TLS validity, TLS version and days until certificate expiry. No page scraping, no user-provided URLs, no private IP probing. $0.05 USDC on Base via x402. Input example: example.com. Performs bounded public DNS resolution and one pinned TLS handshake on port 443, no HTTP request. Reports tls_valid, public IPs and certificate details; not a vulnerability scan or trust certification.",
       "inputSchema": {
         "properties": {
           "domain": {
-            "title": "Domain",
-            "type": "string"
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 253,
+            "description": "Public DNS hostname, for example example.com; no URL, IP, credentials or private host."
           }
         },
         "required": [
@@ -107,9 +566,1809 @@
         ],
         "title": "domain_dns_tls_auditArguments",
         "type": "object"
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "type": "object",
+          "properties": {
+            "domain": {
+              "type": "string"
+            },
+            "resolved_public_ips": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "tls_valid": {
+              "type": "boolean"
+            },
+            "http_requested": {
+              "const": false
+            },
+            "checked_at": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "domain",
+            "resolved_public_ips",
+            "tls_valid",
+            "http_requested",
+            "checked_at"
+          ]
+        }
+      }
+    },
+    {
+      "name": "web_fetch",
+      "title": "Web fetch",
+      "description": "Search public Google results with Serper or securely fetch one public HTTPS page. Optional DeepSeek structured diagnostic. Separate authenticated Agent Tools relay: requires your own company Bearer API key. URL and query are mutually exclusive. Prepaid uses the shared company credit wallet; x402 produces a workload-specific payment quote. Preserve the same idempotency key, arguments and payment mode on retry; admission is not delivery. Poll job status and fetch result with SHA256 verification.",
+      "inputSchema": {
+        "properties": {
+          "arguments": {
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "if": {
+                  "required": [
+                    "url"
+                  ]
+                },
+                "then": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "max_results"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "not": {
+              "required": [
+                "url",
+                "query"
+              ]
+            },
+            "oneOf": [
+              {
+                "required": [
+                  "url"
+                ]
+              },
+              {
+                "required": [
+                  "query"
+                ]
+              }
+            ],
+            "properties": {
+              "diagnose": {
+                "default": false,
+                "description": "Optional DeepSeek interpretation, priced separately; a provider failure never loses the primary result.",
+                "type": "boolean"
+              },
+              "max_results": {
+                "default": 5,
+                "description": "Search results to return in query mode.",
+                "maximum": 10,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "query": {
+                "description": "Google query answered by Serper; returns real source URLs, never synthesised links. Mutually exclusive with url.",
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              "url": {
+                "description": "Public HTTPS page to process. Mutually exclusive with query.",
+                "maxLength": 2048,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "idempotency_key": {
+            "title": "Idempotency Key",
+            "type": "string",
+            "description": "Stable job key; retry exactly the same inputs and payment mode with this key to recover safely.",
+            "pattern": "^[A-Za-z0-9_.:-]{8,128}$",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "payment_mode": {
+            "default": "x402",
+            "enum": [
+              "x402",
+              "prepaid"
+            ],
+            "title": "Payment Mode",
+            "type": "string",
+            "description": "x402 returns a workload-specific quote; prepaid spends your existing shared company credits. No anonymous execution."
+          }
+        },
+        "required": [
+          "arguments",
+          "idempotency_key"
+        ],
+        "title": "web_fetchArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "description": "PaymentRequired, durable job admission, or explicit error. Admission is not delivery; poll owned status then result and verify SHA256.",
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "idempotency_key": {
+                  "type": "string"
+                },
+                "job_id": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "reservation": {
+                  "type": "string"
+                },
+                "available": {
+                  "type": "boolean"
+                },
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "size_bytes": {
+                        "type": "integer"
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "download_path": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "required": [
+                "idempotency_key",
+                "job_id",
+                "state"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Explicit failure code; no success/delivery implied."
+                }
+              },
+              "required": [
+                "error"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "x402Version": {
+                  "const": 2
+                },
+                "accepts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                },
+                "resource": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "x402Version",
+                "accepts"
+              ]
+            }
+          ]
+        },
+        "io.skavio/authentication": "Agent Tools Bearer API key. Operation availability and admission are checked by the customer backend."
+      }
+    },
+    {
+      "name": "web_extract",
+      "title": "Web extract",
+      "description": "Extract one public HTTPS page or search Google then extract 1–5 actual source pages. Optional DeepSeek structured diagnostic. Separate authenticated Agent Tools relay: requires your own company Bearer API key. URL and query are mutually exclusive. Prepaid uses the shared company credit wallet; x402 produces a workload-specific payment quote. Preserve the same idempotency key, arguments and payment mode on retry; admission is not delivery. Poll job status and fetch result with SHA256 verification.",
+      "inputSchema": {
+        "properties": {
+          "arguments": {
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "if": {
+                  "required": [
+                    "url"
+                  ]
+                },
+                "then": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "max_results"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "fetch_top"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "not": {
+              "required": [
+                "url",
+                "query"
+              ]
+            },
+            "oneOf": [
+              {
+                "required": [
+                  "url"
+                ]
+              },
+              {
+                "required": [
+                  "query"
+                ]
+              }
+            ],
+            "properties": {
+              "diagnose": {
+                "default": false,
+                "description": "Optional DeepSeek interpretation, priced separately; a provider failure never loses the primary result.",
+                "type": "boolean"
+              },
+              "fetch_top": {
+                "default": 3,
+                "description": "In query mode, how many top real source URLs to fetch and extract.",
+                "maximum": 5,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "max_results": {
+                "default": 5,
+                "description": "Search results to return in query mode.",
+                "maximum": 10,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "query": {
+                "description": "Google query answered by Serper; returns real source URLs, never synthesised links. Mutually exclusive with url.",
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              "url": {
+                "description": "Public HTTPS page to process. Mutually exclusive with query.",
+                "maxLength": 2048,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "idempotency_key": {
+            "title": "Idempotency Key",
+            "type": "string",
+            "description": "Stable job key; retry exactly the same inputs and payment mode with this key to recover safely.",
+            "pattern": "^[A-Za-z0-9_.:-]{8,128}$",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "payment_mode": {
+            "default": "x402",
+            "enum": [
+              "x402",
+              "prepaid"
+            ],
+            "title": "Payment Mode",
+            "type": "string",
+            "description": "x402 returns a workload-specific quote; prepaid spends your existing shared company credits. No anonymous execution."
+          }
+        },
+        "required": [
+          "arguments",
+          "idempotency_key"
+        ],
+        "title": "web_extractArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "description": "PaymentRequired, durable job admission, or explicit error. Admission is not delivery; poll owned status then result and verify SHA256.",
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "idempotency_key": {
+                  "type": "string"
+                },
+                "job_id": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "reservation": {
+                  "type": "string"
+                },
+                "available": {
+                  "type": "boolean"
+                },
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "size_bytes": {
+                        "type": "integer"
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "download_path": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "required": [
+                "idempotency_key",
+                "job_id",
+                "state"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Explicit failure code; no success/delivery implied."
+                }
+              },
+              "required": [
+                "error"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "x402Version": {
+                  "const": 2
+                },
+                "accepts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                },
+                "resource": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "x402Version",
+                "accepts"
+              ]
+            }
+          ]
+        },
+        "io.skavio/authentication": "Agent Tools Bearer API key. Operation availability and admission are checked by the customer backend."
+      }
+    },
+    {
+      "name": "web_monitor",
+      "title": "Web monitor",
+      "description": "Compare an HTTPS page or Serper search snapshot by SHA-256. Optional DeepSeek structured diagnostic. Separate authenticated Agent Tools relay: requires your own company Bearer API key. URL and query are mutually exclusive. Prepaid uses the shared company credit wallet; x402 produces a workload-specific payment quote. Preserve the same idempotency key, arguments and payment mode on retry; admission is not delivery. Poll job status and fetch result with SHA256 verification.",
+      "inputSchema": {
+        "properties": {
+          "arguments": {
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "if": {
+                  "required": [
+                    "url"
+                  ]
+                },
+                "then": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "max_results"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "not": {
+              "required": [
+                "url",
+                "query"
+              ]
+            },
+            "oneOf": [
+              {
+                "required": [
+                  "url"
+                ]
+              },
+              {
+                "required": [
+                  "query"
+                ]
+              }
+            ],
+            "properties": {
+              "diagnose": {
+                "default": false,
+                "description": "Optional DeepSeek interpretation, priced separately; a provider failure never loses the primary result.",
+                "type": "boolean"
+              },
+              "max_results": {
+                "default": 5,
+                "description": "Search results to return in query mode.",
+                "maximum": 10,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "previous_sha256": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "query": {
+                "description": "Google query answered by Serper; returns real source URLs, never synthesised links. Mutually exclusive with url.",
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              "url": {
+                "description": "Public HTTPS page to process. Mutually exclusive with query.",
+                "maxLength": 2048,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "idempotency_key": {
+            "title": "Idempotency Key",
+            "type": "string",
+            "description": "Stable job key; retry exactly the same inputs and payment mode with this key to recover safely.",
+            "pattern": "^[A-Za-z0-9_.:-]{8,128}$",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "payment_mode": {
+            "default": "x402",
+            "enum": [
+              "x402",
+              "prepaid"
+            ],
+            "title": "Payment Mode",
+            "type": "string",
+            "description": "x402 returns a workload-specific quote; prepaid spends your existing shared company credits. No anonymous execution."
+          }
+        },
+        "required": [
+          "arguments",
+          "idempotency_key"
+        ],
+        "title": "web_monitorArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "description": "PaymentRequired, durable job admission, or explicit error. Admission is not delivery; poll owned status then result and verify SHA256.",
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "idempotency_key": {
+                  "type": "string"
+                },
+                "job_id": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "reservation": {
+                  "type": "string"
+                },
+                "available": {
+                  "type": "boolean"
+                },
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "size_bytes": {
+                        "type": "integer"
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "download_path": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "required": [
+                "idempotency_key",
+                "job_id",
+                "state"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Explicit failure code; no success/delivery implied."
+                }
+              },
+              "required": [
+                "error"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "x402Version": {
+                  "const": 2
+                },
+                "accepts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                },
+                "resource": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "x402Version",
+                "accepts"
+              ]
+            }
+          ]
+        },
+        "io.skavio/authentication": "Agent Tools Bearer API key. Operation availability and admission are checked by the customer backend."
+      }
+    },
+    {
+      "name": "pdf_to_text",
+      "title": "Pdf to text",
+      "description": "Extract selectable text from a PDF using the audited Skavio engine. Separate authenticated processing relay: requires your Agent Tools Bearer API key and an available catalog operation. Default x402 returns a workload quote; prepaid spends shared company credits. Use the same idempotency_key and inputs on retries. An admitted job is not delivered; poll skavio_agent_job_status then skavio_agent_job_result and verify SHA256. No execution when backend admission is disabled.",
+      "inputSchema": {
+        "properties": {
+          "arguments": {
+            "additionalProperties": false,
+            "properties": {
+              "data_base64": {
+                "maxLength": 3000000,
+                "type": "string",
+                "description": "Source document or audio bytes in base64, at most 3,000,000 encoded characters."
+              },
+              "units": {
+                "description": "Optional legacy count; verified against actual source bytes. Omit it for automatic measurement.",
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "data_base64"
+            ],
+            "type": "object"
+          },
+          "idempotency_key": {
+            "title": "Idempotency Key",
+            "type": "string",
+            "description": "Stable job key; retry exactly the same inputs and payment mode with this key to recover safely.",
+            "pattern": "^[A-Za-z0-9_.:-]{8,128}$",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "payment_mode": {
+            "default": "x402",
+            "enum": [
+              "x402",
+              "prepaid"
+            ],
+            "title": "Payment Mode",
+            "type": "string",
+            "description": "x402 returns a workload-specific quote; prepaid spends your existing shared company credits. No anonymous execution."
+          }
+        },
+        "required": [
+          "arguments",
+          "idempotency_key"
+        ],
+        "title": "pdf_to_textArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "description": "PaymentRequired, durable job admission, or explicit error. Admission is not delivery; poll owned status then result and verify SHA256.",
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "idempotency_key": {
+                  "type": "string"
+                },
+                "job_id": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "reservation": {
+                  "type": "string"
+                },
+                "available": {
+                  "type": "boolean"
+                },
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "size_bytes": {
+                        "type": "integer"
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "download_path": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "required": [
+                "idempotency_key",
+                "job_id",
+                "state"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Explicit failure code; no success/delivery implied."
+                }
+              },
+              "required": [
+                "error"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "x402Version": {
+                  "const": 2
+                },
+                "accepts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                },
+                "resource": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "x402Version",
+                "accepts"
+              ]
+            }
+          ]
+        },
+        "io.skavio/authentication": "Agent Tools Bearer API key. Operation availability and admission are checked by the customer backend."
+      }
+    },
+    {
+      "name": "document_ocr",
+      "title": "Document ocr",
+      "description": "OCR a scanned document into searchable text. Separate authenticated processing relay: requires your Agent Tools Bearer API key and an available catalog operation. Default x402 returns a workload quote; prepaid spends shared company credits. Use the same idempotency_key and inputs on retries. An admitted job is not delivered; poll skavio_agent_job_status then skavio_agent_job_result and verify SHA256. No execution when backend admission is disabled.",
+      "inputSchema": {
+        "properties": {
+          "arguments": {
+            "additionalProperties": false,
+            "properties": {
+              "data_base64": {
+                "maxLength": 3000000,
+                "type": "string",
+                "description": "Source document or audio bytes in base64, at most 3,000,000 encoded characters."
+              },
+              "units": {
+                "description": "Optional legacy count; verified against actual source bytes. Omit it for automatic measurement.",
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "data_base64"
+            ],
+            "type": "object"
+          },
+          "idempotency_key": {
+            "title": "Idempotency Key",
+            "type": "string",
+            "description": "Stable job key; retry exactly the same inputs and payment mode with this key to recover safely.",
+            "pattern": "^[A-Za-z0-9_.:-]{8,128}$",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "payment_mode": {
+            "default": "x402",
+            "enum": [
+              "x402",
+              "prepaid"
+            ],
+            "title": "Payment Mode",
+            "type": "string",
+            "description": "x402 returns a workload-specific quote; prepaid spends your existing shared company credits. No anonymous execution."
+          }
+        },
+        "required": [
+          "arguments",
+          "idempotency_key"
+        ],
+        "title": "document_ocrArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "description": "PaymentRequired, durable job admission, or explicit error. Admission is not delivery; poll owned status then result and verify SHA256.",
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "idempotency_key": {
+                  "type": "string"
+                },
+                "job_id": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "reservation": {
+                  "type": "string"
+                },
+                "available": {
+                  "type": "boolean"
+                },
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "size_bytes": {
+                        "type": "integer"
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "download_path": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "required": [
+                "idempotency_key",
+                "job_id",
+                "state"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Explicit failure code; no success/delivery implied."
+                }
+              },
+              "required": [
+                "error"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "x402Version": {
+                  "const": 2
+                },
+                "accepts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                },
+                "resource": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "x402Version",
+                "accepts"
+              ]
+            }
+          ]
+        },
+        "io.skavio/authentication": "Agent Tools Bearer API key. Operation availability and admission are checked by the customer backend."
+      }
+    },
+    {
+      "name": "invoice_extract",
+      "title": "Invoice extract",
+      "description": "Extract structured invoice fields from one document, priced per page with the extraction call included. Separate authenticated processing relay: requires your Agent Tools Bearer API key and an available catalog operation. Default x402 returns a workload quote; prepaid spends shared company credits. Use the same idempotency_key and inputs on retries. An admitted job is not delivered; poll skavio_agent_job_status then skavio_agent_job_result and verify SHA256. No execution when backend admission is disabled.",
+      "inputSchema": {
+        "properties": {
+          "arguments": {
+            "additionalProperties": false,
+            "properties": {
+              "data_base64": {
+                "maxLength": 3000000,
+                "type": "string",
+                "description": "Source document or audio bytes in base64, at most 3,000,000 encoded characters."
+              },
+              "units": {
+                "description": "Optional legacy count; verified against actual source bytes. Omit it for automatic measurement.",
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "data_base64"
+            ],
+            "type": "object"
+          },
+          "idempotency_key": {
+            "title": "Idempotency Key",
+            "type": "string",
+            "description": "Stable job key; retry exactly the same inputs and payment mode with this key to recover safely.",
+            "pattern": "^[A-Za-z0-9_.:-]{8,128}$",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "payment_mode": {
+            "default": "x402",
+            "enum": [
+              "x402",
+              "prepaid"
+            ],
+            "title": "Payment Mode",
+            "type": "string",
+            "description": "x402 returns a workload-specific quote; prepaid spends your existing shared company credits. No anonymous execution."
+          }
+        },
+        "required": [
+          "arguments",
+          "idempotency_key"
+        ],
+        "title": "invoice_extractArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "description": "PaymentRequired, durable job admission, or explicit error. Admission is not delivery; poll owned status then result and verify SHA256.",
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "idempotency_key": {
+                  "type": "string"
+                },
+                "job_id": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "reservation": {
+                  "type": "string"
+                },
+                "available": {
+                  "type": "boolean"
+                },
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "size_bytes": {
+                        "type": "integer"
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "download_path": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "required": [
+                "idempotency_key",
+                "job_id",
+                "state"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Explicit failure code; no success/delivery implied."
+                }
+              },
+              "required": [
+                "error"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "x402Version": {
+                  "const": 2
+                },
+                "accepts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                },
+                "resource": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "x402Version",
+                "accepts"
+              ]
+            }
+          ]
+        },
+        "io.skavio/authentication": "Agent Tools Bearer API key. Operation availability and admission are checked by the customer backend."
+      }
+    },
+    {
+      "name": "audio_transcribe",
+      "title": "Audio transcribe",
+      "description": "Transcribe bounded audio or video to text. Separate authenticated processing relay: requires your Agent Tools Bearer API key and an available catalog operation. Default x402 returns a workload quote; prepaid spends shared company credits. Use the same idempotency_key and inputs on retries. An admitted job is not delivered; poll skavio_agent_job_status then skavio_agent_job_result and verify SHA256. No execution when backend admission is disabled.",
+      "inputSchema": {
+        "properties": {
+          "arguments": {
+            "additionalProperties": false,
+            "properties": {
+              "data_base64": {
+                "maxLength": 3000000,
+                "type": "string",
+                "description": "Source document or audio bytes in base64, at most 3,000,000 encoded characters."
+              },
+              "units": {
+                "description": "Optional legacy count; verified against actual source bytes. Omit it for automatic measurement.",
+                "maximum": 30,
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "data_base64"
+            ],
+            "type": "object"
+          },
+          "idempotency_key": {
+            "title": "Idempotency Key",
+            "type": "string",
+            "description": "Stable job key; retry exactly the same inputs and payment mode with this key to recover safely.",
+            "pattern": "^[A-Za-z0-9_.:-]{8,128}$",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "payment_mode": {
+            "default": "x402",
+            "enum": [
+              "x402",
+              "prepaid"
+            ],
+            "title": "Payment Mode",
+            "type": "string",
+            "description": "x402 returns a workload-specific quote; prepaid spends your existing shared company credits. No anonymous execution."
+          }
+        },
+        "required": [
+          "arguments",
+          "idempotency_key"
+        ],
+        "title": "audio_transcribeArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "description": "PaymentRequired, durable job admission, or explicit error. Admission is not delivery; poll owned status then result and verify SHA256.",
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "idempotency_key": {
+                  "type": "string"
+                },
+                "job_id": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "reservation": {
+                  "type": "string"
+                },
+                "available": {
+                  "type": "boolean"
+                },
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "size_bytes": {
+                        "type": "integer"
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "download_path": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "required": [
+                "idempotency_key",
+                "job_id",
+                "state"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Explicit failure code; no success/delivery implied."
+                }
+              },
+              "required": [
+                "error"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "x402Version": {
+                  "const": 2
+                },
+                "accepts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                },
+                "resource": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "x402Version",
+                "accepts"
+              ]
+            }
+          ]
+        },
+        "io.skavio/authentication": "Agent Tools Bearer API key. Operation availability and admission are checked by the customer backend."
+      }
+    },
+    {
+      "name": "pdf_split",
+      "title": "Pdf split",
+      "description": "Split a PDF into a selected set of pages. Separate authenticated processing relay: requires your Agent Tools Bearer API key and an available catalog operation. Default x402 returns a workload quote; prepaid spends shared company credits. Use the same idempotency_key and inputs on retries. An admitted job is not delivered; poll skavio_agent_job_status then skavio_agent_job_result and verify SHA256. No execution when backend admission is disabled.",
+      "inputSchema": {
+        "properties": {
+          "arguments": {
+            "additionalProperties": false,
+            "properties": {
+              "data_base64": {
+                "maxLength": 3000000,
+                "type": "string",
+                "description": "Source document or audio bytes in base64, at most 3,000,000 encoded characters."
+              },
+              "pages": {
+                "items": {
+                  "maximum": 100,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "maxItems": 100,
+                "minItems": 1,
+                "type": "array",
+                "description": "One-based PDF pages to keep, at most 100."
+              },
+              "units": {
+                "description": "Optional legacy count; verified against actual source bytes. Omit it for automatic measurement.",
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "data_base64",
+              "pages"
+            ],
+            "type": "object"
+          },
+          "idempotency_key": {
+            "title": "Idempotency Key",
+            "type": "string",
+            "description": "Stable job key; retry exactly the same inputs and payment mode with this key to recover safely.",
+            "pattern": "^[A-Za-z0-9_.:-]{8,128}$",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "payment_mode": {
+            "default": "x402",
+            "enum": [
+              "x402",
+              "prepaid"
+            ],
+            "title": "Payment Mode",
+            "type": "string",
+            "description": "x402 returns a workload-specific quote; prepaid spends your existing shared company credits. No anonymous execution."
+          }
+        },
+        "required": [
+          "arguments",
+          "idempotency_key"
+        ],
+        "title": "pdf_splitArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "description": "PaymentRequired, durable job admission, or explicit error. Admission is not delivery; poll owned status then result and verify SHA256.",
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "idempotency_key": {
+                  "type": "string"
+                },
+                "job_id": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "reservation": {
+                  "type": "string"
+                },
+                "available": {
+                  "type": "boolean"
+                },
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "size_bytes": {
+                        "type": "integer"
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "download_path": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "required": [
+                "idempotency_key",
+                "job_id",
+                "state"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Explicit failure code; no success/delivery implied."
+                }
+              },
+              "required": [
+                "error"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "x402Version": {
+                  "const": 2
+                },
+                "accepts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                },
+                "resource": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "x402Version",
+                "accepts"
+              ]
+            }
+          ]
+        },
+        "io.skavio/authentication": "Agent Tools Bearer API key. Operation availability and admission are checked by the customer backend."
+      }
+    },
+    {
+      "name": "pdf_merge",
+      "title": "Pdf merge",
+      "description": "Merge two to five PDFs into one document. Separate authenticated processing relay: requires your Agent Tools Bearer API key and an available catalog operation. Default x402 returns a workload quote; prepaid spends shared company credits. Use the same idempotency_key and inputs on retries. An admitted job is not delivered; poll skavio_agent_job_status then skavio_agent_job_result and verify SHA256. No execution when backend admission is disabled.",
+      "inputSchema": {
+        "properties": {
+          "arguments": {
+            "additionalProperties": false,
+            "properties": {
+              "inputs_base64": {
+                "items": {
+                  "maxLength": 3000000,
+                  "type": "string"
+                },
+                "maxItems": 5,
+                "minItems": 2,
+                "type": "array",
+                "description": "Two to five source PDFs, each base64 encoded."
+              },
+              "units": {
+                "description": "Optional legacy count; verified against actual source bytes. Omit it for automatic measurement.",
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "inputs_base64"
+            ],
+            "type": "object"
+          },
+          "idempotency_key": {
+            "title": "Idempotency Key",
+            "type": "string",
+            "description": "Stable job key; retry exactly the same inputs and payment mode with this key to recover safely.",
+            "pattern": "^[A-Za-z0-9_.:-]{8,128}$",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "payment_mode": {
+            "default": "x402",
+            "enum": [
+              "x402",
+              "prepaid"
+            ],
+            "title": "Payment Mode",
+            "type": "string",
+            "description": "x402 returns a workload-specific quote; prepaid spends your existing shared company credits. No anonymous execution."
+          }
+        },
+        "required": [
+          "arguments",
+          "idempotency_key"
+        ],
+        "title": "pdf_mergeArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "description": "PaymentRequired, durable job admission, or explicit error. Admission is not delivery; poll owned status then result and verify SHA256.",
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "idempotency_key": {
+                  "type": "string"
+                },
+                "job_id": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "reservation": {
+                  "type": "string"
+                },
+                "available": {
+                  "type": "boolean"
+                },
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "size_bytes": {
+                        "type": "integer"
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "download_path": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "required": [
+                "idempotency_key",
+                "job_id",
+                "state"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Explicit failure code; no success/delivery implied."
+                }
+              },
+              "required": [
+                "error"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "x402Version": {
+                  "const": 2
+                },
+                "accepts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                },
+                "resource": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "x402Version",
+                "accepts"
+              ]
+            }
+          ]
+        },
+        "io.skavio/authentication": "Agent Tools Bearer API key. Operation availability and admission are checked by the customer backend."
+      }
+    },
+    {
+      "name": "skavio_agent_job_status",
+      "title": "Agent job status",
+      "description": "Read your owned processing job and result manifest; no new payment. Input is your original idempotency key. Returns state, reservation, availability and any owned result IDs; only available results may be downloaded.",
+      "inputSchema": {
+        "properties": {
+          "idempotency_key": {
+            "title": "Idempotency Key",
+            "type": "string",
+            "description": "Your original processing job key; same authenticated company only.",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9_.:-]{8,128}$"
+          }
+        },
+        "required": [
+          "idempotency_key"
+        ],
+        "title": "skavio_agent_job_statusArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "idempotency_key": {
+                  "type": "string"
+                },
+                "job_id": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "reservation": {
+                  "type": "string"
+                },
+                "available": {
+                  "type": "boolean"
+                },
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "size_bytes": {
+                        "type": "integer"
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "download_path": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "required": [
+                "idempotency_key",
+                "job_id",
+                "state"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Explicit failure code; no success/delivery implied."
+                }
+              },
+              "required": [
+                "error"
+              ]
+            }
+          ]
+        },
+        "io.skavio/result-encoding": "Free discovery: JSON result in content. Authenticated relays: JSON in structuredContent and text. Error isError=true; never infer delivery from admission."
+      }
+    },
+    {
+      "name": "skavio_agent_job_result",
+      "title": "Agent job result",
+      "description": "Download your owned completed processing result as base64 with SHA256; no new payment. Input result_id must come from your completed owned manifest. Returns data_base64, sha256 and delivered=true, or an explicit error; independently verify the checksum.",
+      "inputSchema": {
+        "properties": {
+          "idempotency_key": {
+            "title": "Idempotency Key",
+            "type": "string",
+            "description": "Your original processing job key; same authenticated company only.",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9_.:-]{8,128}$"
+          },
+          "result_id": {
+            "title": "Result Id",
+            "type": "string",
+            "description": "A result_id from the owned completed job status manifest. Verify returned SHA256.",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          }
+        },
+        "required": [
+          "idempotency_key",
+          "result_id"
+        ],
+        "title": "skavio_agent_job_resultArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "idempotency_key": {
+                  "type": "string"
+                },
+                "result_id": {
+                  "type": "string"
+                },
+                "data_base64": {
+                  "type": "string",
+                  "contentEncoding": "base64"
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "delivered": {
+                  "const": true
+                }
+              },
+              "required": [
+                "idempotency_key",
+                "result_id",
+                "data_base64",
+                "sha256",
+                "delivered"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Explicit failure code; no success/delivery implied."
+                }
+              },
+              "required": [
+                "error"
+              ]
+            }
+          ]
+        },
+        "io.skavio/result-encoding": "Free discovery: JSON result in content. Authenticated relays: JSON in structuredContent and text. Error isError=true; never infer delivery from admission."
+      }
+    },
+    {
+      "name": "skavio_agent_wallet",
+      "title": "Agent wallet",
+      "description": "Read your authoritative shared credit wallet; no new payment. Returns balance_credits, available_credits, reserved_credits and USD display strings with ledger_source. It does not fund, reserve, move or spend credits.",
+      "inputSchema": {
+        "properties": {},
+        "title": "skavio_agent_walletArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      },
+      "_meta": {
+        "io.skavio/result-schema": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "balance_credits": {
+                  "type": "integer"
+                },
+                "available_credits": {
+                  "type": "integer"
+                },
+                "reserved_credits": {
+                  "type": "integer"
+                },
+                "balance_usd": {
+                  "type": "string"
+                },
+                "reserved_usd": {
+                  "type": "string"
+                },
+                "ledger_source": {
+                  "enum": [
+                    "shared",
+                    "local"
+                  ]
+                }
+              },
+              "required": [
+                "balance_credits",
+                "available_credits",
+                "reserved_credits",
+                "balance_usd",
+                "reserved_usd",
+                "ledger_source"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Explicit failure code; no success/delivery implied."
+                }
+              },
+              "required": [
+                "error"
+              ]
+            }
+          ]
+        },
+        "io.skavio/result-encoding": "Free discovery: JSON result in content. Authenticated relays: JSON in structuredContent and text. Error isError=true; never infer delivery from admission."
       }
     }
   ],
   "resources": [],
-  "prompts": []
+  "prompts": [],
+  "description": "Base USDC x402 verification/match/PDF/DNS-TLS, plus three authenticated Agent Tools HTTPS or Serper query web-processing relays with optional DeepSeek.",
+  "x-agentToolsEndpoint": "https://www.skavio.eu/agent-tools/mcp",
+  "x-agentToolsAuth": "Requires own Skavio company Bearer API key; prepaid credits or available x402 workload quote."
 }
