@@ -2,6 +2,8 @@
 
 Official connection metadata and documentation for Skavio LLC's hosted MCP tools and x402 HTTP API. This repository contains discovery metadata, not the production server source.
 
+[**Authenticated Web Search, Extraction & Monitoring (Agent Tools)**](WEB_TOOLS.md) — three production web operations with Serper search, original HTTPS source extraction, SHA-256 change monitoring and optional DeepSeek diagnostics. Requires a company Agent Tools Bearer key; separate from public x402 verification.
+
 ## Use Skavio in Cursor and Claude Desktop
 
 [**Connection instructions and ready-to-copy Cursor / Claude Desktop JSON**](MCP_CLIENT_SETUP.md) · [Cursor config](examples/cursor-mcp.json) · [Claude Desktop config](examples/claude-desktop-mcp.json). The publicly discoverable MCP server is `https://www.skavio.eu/mcp`; separate OAuth-protected Processing MCP is at `https://www.skavio.eu/processing/mcp`. Plain MCP clients do **not** automatically process x402 payments.
