@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "eu.skavio/paid-micro-apis",
-  "description": "USDC transfer verification, exact payment matching, blockchain PDF evidence and DNS/TLS; Base x402.",
+  "description": "Native USDC verify/match/PDF and DNS/TLS via Base x402; also authenticated Serper/HTTPS web fetch, extraction and monitoring relays.",
   "title": "Skavio USDC Payment Verification & Proof MCP",
   "version": "1.1.1",
   "websiteUrl": "https://www.skavio.eu/x402/",
@@ -31,7 +31,10 @@
         "x402",
         "payment-verification",
         "payment-reconciliation",
-        "blockchain-evidence"
+        "blockchain-evidence",
+        "web-search",
+        "text-extraction",
+        "monitoring"
       ],
       "payment": {
         "network": "eip155:8453",
@@ -51,7 +54,7 @@
         "avalanche",
         "solana"
       ],
-      "limitations": "Public RPC latency/finality vary. No custody. PDF evidence is not an invoice. Separate authenticated processing relays depend on company authorization and backend availability."
+      "limitations": "Public RPC latency/finality vary. No custody. PDF evidence is not a tax invoice. The three web relays require a separate company Agent Tools Bearer key and are not free anonymous x402 tools."
     }
   }
 }
