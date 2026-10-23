@@ -2,6 +2,8 @@
 
 Official connection metadata and documentation for Skavio LLC's hosted MCP tools and x402 HTTP API. This repository contains discovery metadata, not the production server source.
 
+**New practical guide:** [Verify an incoming USDC transfer from an AI agent using x402](guides/verify-usdc-with-x402.md) — live 0.02/0.03/0.05 USDC operation prices, free HTTP 402 discovery and payment-safe steps. [Try the hosted endpoint](https://www.skavio.eu/x402/?utm_source=github&utm_medium=readme&utm_campaign=x402_developers_20261023).
+
 [**Authenticated Web Search, Extraction & Monitoring (Agent Tools)**](WEB_TOOLS.md) — three production web operations with Serper search, original HTTPS source extraction, SHA-256 change monitoring and optional DeepSeek diagnostics. Requires a company Agent Tools Bearer key; separate from public x402 verification.
 
 ## Use Skavio in Cursor and Claude Desktop
