@@ -1,10 +1,14 @@
-{
+https://github.com/skavio-eu/skavio-agent-tools/edit/main/server.json{
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "eu.skavio/paid-micro-apis",
-  "description": "Native USDC verify/match/PDF and DNS/TLS via Base x402; also authenticated Serper/HTTPS web fetch, extraction and monitoring relays.",
+  "description": "18 MCP tools: Base + Solana USDC x402 verification, PDF evidence, DNS/TLS, and company AgentTools.",
   "title": "Skavio USDC Payment Verification & Proof MCP",
-  "version": "1.1.2",
-  "websiteUrl": "https://www.skavio.eu/x402/",
+  "repository": {
+    "url": "https://github.com/skavio-eu/skavio-agent-tools",
+    "source": "github"
+  },
+  "version": "1.1.3",
+  "websiteUrl": "https://getskavio.com/x402/",
   "remotes": [
     {
       "type": "streamable-http",
@@ -19,32 +23,26 @@
       ]
     }
   ],
-  "repository": {
-    "url": "https://github.com/skavio-eu/skavio-agent-tools",
-    "source": "github"
-  },
   "_meta": {
     "io.modelcontextprotocol.registry/publisher-provided": {
-      "documentation": "https://www.skavio.eu/x402/docs/",
-      "tags": [
-        "usdc",
-        "x402",
-        "payment-verification",
-        "payment-reconciliation",
-        "blockchain-evidence",
-        "web-search",
-        "text-extraction",
-        "monitoring"
-      ],
-      "payment": {
-        "network": "eip155:8453",
-        "asset": "native Circle USDC",
-        "verify": "0.02 USDC",
-        "match": "0.03 USDC",
-        "evidence_pdf": "0.05 USDC",
-        "domain_audit": "0.05 USDC",
-        "client_requirement": "x402 MCP v2 wallet extension; params._meta[x402/payment]"
+      "agentTools": {
+        "auth": "company Bearer API key",
+        "endpoint": "https://www.skavio.eu/agent-tools/mcp",
+        "functions": [
+          "web_fetch",
+          "web_extract",
+          "web_monitor",
+          "pdf_to_text",
+          "pdf_split",
+          "pdf_merge",
+          "document_ocr",
+          "invoice_extract",
+          "audio_transcribe"
+        ],
+        "pricing": "https://getskavio.com/agent-tools/api/pricing",
+        "provider_note": "Google search via DeepSeek/Serper providers and optional DeepSeek interpretation; extra costs quoted when used"
       },
+      "documentation": "https://getskavio.com/x402/docs/",
       "inspectionNetworks": [
         "base",
         "polygon",
@@ -54,7 +52,34 @@
         "avalanche",
         "solana"
       ],
-      "limitations": "Public RPC latency/finality vary. No custody. PDF evidence is not a tax invoice. The three web relays require a separate company Agent Tools Bearer key and are not free anonymous x402 tools."
+      "limitations": "Blockchain evidence PDF is not a tax invoice. No custody, no SOL as payment currency, no automatic wallet or wallet key. RPC latency/finality vary. The separate HTTP x402 Verify/Match/PDF listings may continue to accept Base only. Authenticated processing relays need company credentials and credits/x402 quotes.",
+      "payment": {
+        "asset": "Native Circle USDC on Base (ERC-20) or Solana (SPL; EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v)",
+        "client_requirement": "x402 MCP v2 wallet extension; params._meta[x402/payment]",
+        "domain_audit": "0.05 USDC",
+        "evidence_pdf": "0.05 USDC",
+        "match": "0.03 USDC",
+        "networks": [
+          "eip155:8453",
+          "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"
+        ],
+        "scheme": "x402 v2 exact",
+        "verify": "0.02 USDC"
+      },
+      "tags": [
+        "audio-transcription",
+        "base",
+        "blockchain-evidence",
+        "invoice-processing",
+        "ocr",
+        "payment-reconciliation",
+        "payment-verification",
+        "pdf",
+        "solana",
+        "usdc",
+        "web-search",
+        "x402"
+      ]
     }
   }
 }
