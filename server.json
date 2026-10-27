@@ -1,4 +1,4 @@
-https://github.com/skavio-eu/skavio-agent-tools/edit/main/server.json{
+{
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "eu.skavio/paid-micro-apis",
   "description": "18 MCP tools: Base + Solana USDC x402 verification, PDF evidence, DNS/TLS, and company AgentTools.",
