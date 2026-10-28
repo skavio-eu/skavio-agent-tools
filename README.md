@@ -6,7 +6,18 @@ Official connection metadata and documentation for Skavio LLC's hosted MCP tools
 
 **New practical guide:** [Verify an incoming USDC transfer from an AI agent using x402](guides/verify-usdc-with-x402.md) — live 0.02/0.03/0.05 USDC operation prices, free HTTP 402 discovery and payment-safe steps. [Try the hosted endpoint](https://getskavio.com/x402/?utm_source=github&utm_medium=readme&utm_campaign=x402_developers_20261023).
 
-[**Authenticated Web Search, Extraction & Monitoring (Agent Tools)**](WEB_TOOLS.md) — three production web operations with Serper search, original HTTPS source extraction, SHA-256 change monitoring and optional DeepSeek diagnostics. Requires a company Agent Tools Bearer key; separate from public x402 verification.
+**LIVE — DeepSeek-only x402 HTTP Web APIs:** [Seven-route discovery](https://getskavio.com/.well-known/x402) · [OpenAPI](https://getskavio.com/x402/openapi.json). These four paid HTTP endpoints are separate from tenant-authenticated MCP Agent Tools:
+
+| x402 HTTP tool | Route | Native Base USDC per request |
+| --- | --- | ---: |
+| Web Fetch | `POST /x402/v1/web/fetch` | 0.01 |
+| Web Search | `POST /x402/v1/web/search` | 0.02 |
+| Web Extract | `POST /x402/v1/web/extract` | 0.02 |
+| Extract + Analyze | `POST /x402/v1/web/extract/analyze` | 0.03 |
+
+All four use DeepSeek Search, Fetch or Flash with no alternate provider. An unsigned call returns an x402-v2 HTTP 402 quote; compatible clients sign and retry with `PAYMENT-SIGNATURE`. One real 0.01 USDC Web Fetch purchase on 28 October 2026 settled and delivered the requested result. Do not assume the other three have independent funded checkout results. Keys and signing remain in the buyer's wallet.
+
+**Separate authenticated company Agent Tools:** [Legacy enterprise API integration notes](WEB_TOOLS.md). Those older web operations and their provider migration are not part of this new DeepSeek-only paid HTTP release.
 
 ## Use Skavio in Cursor and Claude Desktop
 
@@ -26,11 +37,11 @@ Transfer inspection supports Base, Polygon, Arbitrum, Optimism, Ethereum, Avalan
 
 HTTP documentation: https://getskavio.com/x402/docs
 
-Three HTTP routes are advertised: `/x402/v1/usdc/verify`, `/x402/v1/usdc/match`, `/x402/v1/usdc/evidence.pdf`. Use the documented query parameters and a compatible x402 client.
+The three established Base USDC verification routes remain public: `/x402/v1/usdc/verify`, `/x402/v1/usdc/match`, and `/x402/v1/usdc/evidence.pdf`. Four additional paid DeepSeek web POST routes are listed above; all seven are indexed in the canonical discovery document.
 
 Public unsigned challenge and discovery checks do not establish successful funded settlement or profitability. No revenue claim is made. The current public `tools/list` also advertises tenant-authenticated document, OCR, invoice, audio and web Agent Tools. These require a valid Agent Tools credential and cannot be used anonymously. The **separate** OAuth-protected Processing API and its developer kit are at https://github.com/skavio-eu/skavio-processing-api.
 
-Published in the official MCP Registry as `eu.skavio/paid-micro-apis`, version `1.1.3`: https://registry.modelcontextprotocol.io/v0.1/servers/eu.skavio%2Fpaid-micro-apis/versions/1.1.3. Other directory registrations are tracked separately. Prices and capabilities may change; inspect current server responses before authorizing payment.
+Published in the official MCP Registry as `eu.skavio/paid-micro-apis`, version `1.1.4`: https://registry.modelcontextprotocol.io/v0.1/servers/eu.skavio%2Fpaid-micro-apis/versions/1.1.4. Other directory registrations are tracked separately. Prices and capabilities may change; inspect current server responses before authorizing payment.
 
 <!-- discovery-release-20261017 -->
 
@@ -39,7 +50,7 @@ Published in the official MCP Registry as `eu.skavio/paid-micro-apis`, version `
 Skavio USDC Payment Verification — x402 API inspects native Circle USDC transfers, matches an exact recipient and decimal amount, and generates blockchain evidence PDFs. Use it for merchant payment reconciliation, accountant transaction review and agent workflows. PDF evidence is not a tax invoice or a guarantee of third-party authorization.
 
 - HTTP Verify: **0.02 native USDC**; Match: **0.03 USDC**; PDF: **0.05 USDC**. Payment settles separately on **Base** through x402 v2. Inspection supports Base, Polygon, Arbitrum, Optimism, Ethereum, Avalanche and finalized Solana.
-- [API quickstart, schemas, errors and client configurations](https://getskavio.com/x402/docs/) · [three-route discovery](https://getskavio.com/.well-known/x402) · [OpenAPI](https://getskavio.com/x402/openapi.json).
+- [API quickstart, schemas, errors and client configurations](https://getskavio.com/x402/docs/) · [seven-route discovery](https://getskavio.com/.well-known/x402) · [OpenAPI](https://getskavio.com/x402/openapi.json).
 - [Skavio USDC Payment Verification & Proof MCP](https://registry.modelcontextprotocol.io/v0.1/servers/eu.skavio%2Fpaid-micro-apis/versions/1.1.3), version **1.1.3**. Stable registry namespace and tool IDs are unchanged. Connect using `https://getskavio.com/mcp` (Streamable HTTP).
 - MCP has four paid blockchain/domain tools (`verify_native_usdc`, `match_native_usdc_payment`, `usdc_transfer_evidence_pdf`, `domain_dns_tls_audit`), two free discovery tools, and twelve separate authenticated AgentTools processing/job/wallet relays. The DNS/TLS audit is 0.05 USDC and is not a vulnerability scan.
 - **A standard MCP client without a wallet x402 extension cannot automatically pay.** Discovery is free. Paid MCP retries preserve `params._meta["x402/payment"]`; HTTP retries use `PAYMENT-SIGNATURE`. Never send a private key or seed phrase. No custody or automatic spending is created by adding a server.
