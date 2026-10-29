@@ -41,6 +41,16 @@ Read-only blockchain validation queries **external public RPC endpoints** for ex
 
 The inspected blockchain transfer is public and read-only. Skavio does not custody inspected funds or ask for wallet keys. A **separate payment authorization** is needed for any paid invocation, not for free discovery.
 
+## Independently verified storage separation and backup policy (29 October 2026)
+
+- **Application host:** dedicated AX41 production app/processing system; it is not the customer database server.
+- **Structured customer and processing records:** independent PostgreSQL host (DB01), reached via private networking and TLS `verify-full` certificate validation.
+- **Customer file objects:** separate UpCloud S3-compatible Object Storage in the **Europe-2** region. Tenant-scoped object access and S3 server-side encryption were tested. Application processes may temporarily access payloads and hold local working caches during work.
+- **Current live retention configuration:** all 33 company storage policies have 7-day defaults for sources, processed results and user archives; a 15-minute guard maintains these defaults for newly created accounts, and the production application performs expired-object cleanup around hourly, except active/pinned jobs and authorized legal holds.
+- **Separate encrypted offsite Borg snapshots:** S3 object backups are scoped to **7 days**; full-server disaster-recovery backups are scoped to **14 days**. Separate financial/accounting recovery archives are excluded from this automatic prune because their retention obligations differ. Pruning and physical Borg compaction run under the same cross-job lock after successful backups, with freshness checks. Existing offsite historical archives can therefore hold copies after deletion from live S3, until their own backup window expires.
+- **Verification:** on 29 October four expired S3 snapshots were pruned; compaction reclaimed approximately 177 MB; sample files were restored both before and after pruning, including the S3 archive structure and a database-backup manifest. This is a sample **restore smoke test**, not a complete recovery of all databases or an independent disaster-recovery SLA certification.
+- **Limit:** historical customer data may still exist in older full-host backups and processing caches during their permitted lifecycle. We cannot claim global zero-data retention or irrevocable deletion from every backup after exactly seven days.
+
 ## Reproducible free inspection — no payment
 
 1. `initialize` and `tools/list` on `https://getskavio.com/mcp` using MCP Streamable HTTP and Accept `application/json, text/event-stream`. As of 29 October, both the canonical and legacy aliases report runtime `1.30.0` and 18 tools.

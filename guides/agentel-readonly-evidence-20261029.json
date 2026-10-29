@@ -1,0 +1,158 @@
+{
+  "checked_utc": "2026-10-29T10:59:30.945653+00:00",
+  "method": "Public production read-only discovery (no paid MCP execution; no personal data)",
+  "endpoints": {
+    "https://getskavio.com/mcp": {
+      "http_status": 200,
+      "runtime_version": "1.30.0",
+      "protocol": "2025-06-18",
+      "tools": 18,
+      "tool_names": [
+        "skavio_launch_status",
+        "skavio_catalog",
+        "verify_native_usdc",
+        "match_native_usdc_payment",
+        "usdc_transfer_evidence_pdf",
+        "domain_dns_tls_audit",
+        "web_fetch",
+        "web_extract",
+        "web_monitor",
+        "pdf_to_text",
+        "document_ocr",
+        "invoice_extract",
+        "audio_transcribe",
+        "pdf_split",
+        "pdf_merge",
+        "skavio_agent_job_status",
+        "skavio_agent_job_result",
+        "skavio_agent_wallet"
+      ]
+    },
+    "https://www.skavio.eu/mcp": {
+      "http_status": 200,
+      "runtime_version": "1.30.0",
+      "protocol": "2025-06-18",
+      "tools": 18,
+      "tool_names": [
+        "skavio_launch_status",
+        "skavio_catalog",
+        "verify_native_usdc",
+        "match_native_usdc_payment",
+        "usdc_transfer_evidence_pdf",
+        "domain_dns_tls_audit",
+        "web_fetch",
+        "web_extract",
+        "web_monitor",
+        "pdf_to_text",
+        "document_ocr",
+        "invoice_extract",
+        "audio_transcribe",
+        "pdf_split",
+        "pdf_merge",
+        "skavio_agent_job_status",
+        "skavio_agent_job_result",
+        "skavio_agent_wallet"
+      ]
+    }
+  },
+  "catalog": {
+    "public_prices": [
+      {
+        "name": "verify_native_usdc",
+        "price_usdc": "0.02"
+      },
+      {
+        "name": "match_native_usdc_payment",
+        "price_usdc": "0.03"
+      },
+      {
+        "name": "usdc_transfer_evidence_pdf",
+        "price_usdc": "0.05"
+      },
+      {
+        "name": "domain_dns_tls_audit",
+        "price_usdc": "0.05"
+      }
+    ],
+    "inspection_networks": [
+      "base",
+      "polygon",
+      "arbitrum",
+      "optimism",
+      "ethereum",
+      "avalanche",
+      "solana"
+    ],
+    "payment_rails": [
+      {
+        "network": "eip155:8453",
+        "name": "base",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      },
+      {
+        "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+        "name": "solana",
+        "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+      }
+    ],
+    "tenant_processing_tools": [
+      "web_fetch",
+      "web_extract",
+      "web_monitor",
+      "pdf_to_text",
+      "document_ocr",
+      "invoice_extract",
+      "audio_transcribe",
+      "pdf_split",
+      "pdf_merge"
+    ],
+    "processing_auth": "Agent Tools Bearer API key"
+  },
+  "unsigned_http_payment_challenge": {
+    "method": "GET",
+    "url": "https://getskavio.com/x402/v1/usdc/verify?tx_hash=0x98809948204426c574b6f0aabdec03baa996b5c43ce28cc9ca704fa5d07e592e&network=base",
+    "status": 402,
+    "x402Version": 2,
+    "accepts": [
+      {
+        "network": "eip155:8453",
+        "amount_atomic": "20000",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "scheme": "exact"
+      }
+    ],
+    "authorized_payment": false
+  },
+  "documentation": {
+    "https://getskavio.com/privacy/": {
+      "status": 200,
+      "content_type": "text/html; charset=utf-8"
+    },
+    "https://getskavio.com/terms/": {
+      "status": 200,
+      "content_type": "text/html; charset=utf-8"
+    },
+    "https://getskavio.com/x402/docs/": {
+      "status": 200,
+      "content_type": "text/html; charset=utf-8"
+    },
+    "https://getskavio.com/.well-known/x402": {
+      "status": 200,
+      "content_type": "application/json; charset=utf-8"
+    },
+    "https://getskavio.com/x402/openapi.json": {
+      "status": 200,
+      "content_type": "application/json; charset=utf-8"
+    },
+    "https://getskavio.com/agent-tools/api/pricing": {
+      "status": 200,
+      "content_type": "application/json"
+    }
+  },
+  "registry": {
+    "version": "1.1.5",
+    "remote": "https://getskavio.com/mcp",
+    "state": "active",
+    "is_latest": true
+  }
+}
