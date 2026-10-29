@@ -1,18 +1,18 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "eu.skavio/paid-micro-apis",
-  "description": "18 MCP tools: Base + Solana USDC x402 verification, PDF evidence, DNS/TLS, and company AgentTools.",
+  "description": "18-tool MCP: free discovery, 4 paid native Circle USDC verification/DNS tools (Base or Solana settlement), and separately authenticated company processing/job tools.",
   "title": "Skavio USDC Payment Verification & Proof MCP",
   "repository": {
     "url": "https://github.com/skavio-eu/skavio-agent-tools",
     "source": "github"
   },
-  "version": "1.1.3",
+  "version": "1.1.5",
   "websiteUrl": "https://getskavio.com/x402/",
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://www.skavio.eu/mcp",
+      "url": "https://getskavio.com/mcp",
       "headers": [
         {
           "description": "Optional Agent Tools Bearer API key for tenant processing relays only. Public blockchain/domain tools require x402 payment metadata, not this key.",
@@ -27,7 +27,7 @@
     "io.modelcontextprotocol.registry/publisher-provided": {
       "agentTools": {
         "auth": "company Bearer API key",
-        "endpoint": "https://www.skavio.eu/agent-tools/mcp",
+        "endpoint": "https://getskavio.com/agent-tools/mcp",
         "functions": [
           "web_fetch",
           "web_extract",
@@ -52,7 +52,7 @@
         "avalanche",
         "solana"
       ],
-      "limitations": "Blockchain evidence PDF is not a tax invoice. No custody, no SOL as payment currency, no automatic wallet or wallet key. RPC latency/finality vary. The separate HTTP x402 Verify/Match/PDF listings may continue to accept Base only. Authenticated processing relays need company credentials and credits/x402 quotes.",
+      "limitations": "Public discovery is free; 4 paid MCP tools require x402 MCP v2 native USDC on Base or Solana. Separate company processing requires Bearer credentials and credit/quotes. Blockchain inspection covers seven chains; standalone x402 HTTP payments settle Base only. Evidence PDF is not a tax invoice. No custody, no private keys. RPC availability and finality vary; published privacy covers category-specific log/payment retention.",
       "payment": {
         "asset": "Native Circle USDC on Base (ERC-20) or Solana (SPL; EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v)",
         "client_requirement": "x402 MCP v2 wallet extension; params._meta[x402/payment]",
@@ -79,7 +79,13 @@
         "usdc",
         "web-search",
         "x402"
-      ]
+      ],
+      "privacy": "https://getskavio.com/privacy/",
+      "dataHandling": "https://github.com/skavio-eu/skavio-agent-tools/blob/main/guides/public-usdc-mcp-integration-facts.md",
+      "provider": "Skavio LLC",
+      "contact": "info@getskavio.com",
+      "runtimeVersion": "1.30.0 (live MCP initialize on 2026-10-29; independent of registry descriptor version)",
+      "repositoryScope": "Public connection metadata, client examples and documentation; not hosted production server source."
     }
   }
 }

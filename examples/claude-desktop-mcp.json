@@ -5,7 +5,7 @@
       "args": [
         "-y",
         "mcp-remote",
-        "https://www.skavio.eu/mcp"
+        "https://getskavio.com/mcp"
       ]
     }
   }

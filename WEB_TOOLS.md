@@ -1,6 +1,6 @@
 # Skavio Web Search, Extraction & Monitoring (Agent Tools / MCP)
 
-**Production:** `https://www.skavio.eu/agent-tools/mcp` (Streamable HTTP, Skavio company Agent Tools Bearer API key). OpenAPI: `https://www.skavio.eu/agent-tools/api/openapi.json`. Public paid MCP `https://www.skavio.eu/mcp` also advertises these authenticated AgentTools relays, alongside separate x402 payment verification tools. An anonymous call cannot execute customer processing.
+**Production:** `https://getskavio.com/agent-tools/mcp` (Streamable HTTP, Skavio company Agent Tools Bearer API key). OpenAPI: `https://getskavio.com/agent-tools/api/openapi.json`. Public paid MCP `https://getskavio.com/mcp` also advertises these authenticated AgentTools relays, alongside separate x402 payment verification tools. An anonymous call cannot execute customer processing.
 
 ## Supported tools
 
@@ -27,7 +27,7 @@ These are distinct from public **x402 Verify 0.02, Match 0.03, PDF 0.05 USDC**, 
 ## Example job request
 
 ```http
-POST https://www.skavio.eu/agent-tools/api/jobs
+POST https://getskavio.com/agent-tools/api/jobs
 Authorization: Bearer YOUR_AGENT_TOOLS_API_KEY
 Content-Type: application/json
 ```
@@ -38,6 +38,6 @@ Content-Type: application/json
 
 Poll the resulting job by the original `idempotency_key`, then download owned results through the authenticated API; verify SHA-256 when supplied. Do not change tool, arguments or payment mode when retrying the same key.
 
-For MCP clients use `https://www.skavio.eu/agent-tools/mcp` with a Bearer key and its live `tools/list` schemas. Public `/mcp` has separate x402 handling; do not confuse the two services. The third-party directories may lag the live service until their cache/index is refreshed.
+For MCP clients use `https://getskavio.com/agent-tools/mcp` with a Bearer key and its live `tools/list` schemas. Public `/mcp` has separate x402 handling; do not confuse the two services. The third-party directories may lag the live service until their cache/index is refreshed.
 
 Verified publicly on 18 October 2026: live AgentTools and paid MCP `tools/list` both advertise three web tools with `query` and `url` schemas. No funded public MCP settlement is claimed by this document.

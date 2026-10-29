@@ -1,16 +1,17 @@
 {
   "serverInfo": {
     "name": "Skavio USDC Payment Verification & Proof MCP",
-    "version": "1.1.2"
+    "version": "1.30.0"
   },
   "authentication": {
-    "required": false
+    "required": false,
+    "note": "Free discovery; paid public tools require x402 wallet; tenant processing requires company credential"
   },
   "tools": [
     {
       "name": "skavio_launch_status",
       "title": "Launch status",
-      "description": "Free production availability status, including explicitly disabled processing functions. No execution or charge. Returns enabled/admission flags and unverified funded-execution/margin status; activation is not funded acceptance.",
+      "description": "Free production availability status, including explicitly disabled processing functions. No execution or charge. Returns activation and owner-funded historical payment journal evidence separately from approved pricing and unverified realized profitability.",
       "inputSchema": {
         "properties": {},
         "title": "skavio_launch_statusArguments",
@@ -145,7 +146,7 @@
     {
       "name": "verify_native_usdc",
       "title": "Verify native USDC transaction",
-      "description": "Verify a completed native Circle USDC transfer on Base, Polygon, Arbitrum, Optimism, Ethereum, Avalanche or Solana. $0.02 USDC on Base via x402.",
+      "description": "Inspect a completed native Circle USDC transfer by transaction hash on a supported chain (Base, Polygon, Arbitrum, Optimism, Ethereum, Avalanche or Solana). Use for transaction evidence; use match_native_usdc_payment to require an exact recipient and six-decimal amount, or usdc_transfer_evidence_pdf to obtain a PDF. This call does not initiate transfers or establish payment to a particular invoice. Costs 0.02 USDC via x402 v2; the paid MCP accepts Base or Solana USDC subject to wallet approval. Public-chain RPC finality and availability vary.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -296,7 +297,7 @@
     {
       "name": "match_native_usdc_payment",
       "title": "Match exact USDC recipient and amount",
-      "description": "Match EXACT final native USDC transfer by public recipient and six-decimal amount on any supported chain; includes strict finality. $0.03 USDC on Base via x402.",
+      "description": "Confirm an exact native Circle USDC recipient and six-decimal transfer amount for a completed transaction on a supported EVM chain or Solana, with chain-specific finality checks. Use when reconciling a payment with an expected wallet and amount; for inspecting a transfer without expected values choose verify_native_usdc; for a PDF choose usdc_transfer_evidence_pdf. Requires tx_hash, recipient and amount, does not send funds or create an invoice. Costs 0.03 USDC via x402 v2; paid MCP wallets can pay native USDC on Base or Solana.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -478,7 +479,7 @@
     {
       "name": "usdc_transfer_evidence_pdf",
       "title": "USDC blockchain transfer evidence PDF",
-      "description": "Return base64-encoded PDF containing public blockchain evidence for a native Circle USDC transfer. NOT an invoice. $0.05 USDC on Base via x402.",
+      "description": "Generate a bounded base64-encoded PDF containing publicly verifiable native Circle USDC transaction evidence for an existing on-chain transfer. Use when a customer or accountant needs a downloadable blockchain proof, not when you need a machine-readable exact recipient and amount check (use match_native_usdc_payment) or a simple transaction lookup (use verify_native_usdc). The PDF is not an invoice, tax receipt or authorization. No custody or transfers. Costs 0.05 USDC via x402 v2 on Base or Solana MCP.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -551,7 +552,7 @@
     {
       "name": "domain_dns_tls_audit",
       "title": "Public domain DNS and TLS audit",
-      "description": "Bounded DNS and TLS certificate audit for a single PUBLIC business hostname. Checks public IPs, TLS validity, TLS version and days until certificate expiry. No page scraping, no user-provided URLs, no private IP probing. $0.05 USDC on Base via x402. Input example: example.com. Performs bounded public DNS resolution and one pinned TLS handshake on port 443, no HTTP request. Reports tls_valid, public IPs and certificate details; not a vulnerability scan or trust certification.",
+      "description": "Audit the public DNS records and TLS certificate of ONE public hostname, using bounded DNS resolution and a TLS handshake to port 443. Use for a basic hostname/certificate check; do not use for web content fetching (web_fetch), page extraction (web_extract), vulnerability scanning, port scanning or private IP networks. Input is a hostname such as example.com, not a URL. Returns TLS validity, resolved public IPs, TLS version and certificate expiry where available; no HTTP request. Costs 0.05 native USDC via x402 v2 on Base or Solana MCP.",
       "inputSchema": {
         "properties": {
           "domain": {
@@ -603,75 +604,23 @@
     {
       "name": "web_fetch",
       "title": "Web fetch",
-      "description": "Search public Google results with Serper or securely fetch one public HTTPS page. Optional DeepSeek structured diagnostic. Separate authenticated Agent Tools relay: requires your own company Bearer API key. URL and query are mutually exclusive. Prepaid uses the shared company credit wallet; x402 produces a workload-specific payment quote. Preserve the same idempotency key, arguments and payment mode on retry; admission is not delivery. Poll job status and fetch result with SHA256 verification.",
+      "description": "Retrieve content from a public HTTPS document under robots.txt, SSRF and byte limits. Use for a source fetch; choose web_extract when only human-visible text is needed and web_monitor for content change hashes. This is a separately authenticated company Agent Tools relay; requires a valid Bearer API key, an enabled backend operation and an accepted payment mode. x402 returns a workload-specific quote and prepaid consumes shared company credits. Retry with the SAME idempotency_key and inputs to recover, not a new job. Admission is not delivery: poll skavio_agent_job_status, retrieve through skavio_agent_job_result, and verify SHA256. No anonymous execution.",
       "inputSchema": {
         "properties": {
           "arguments": {
             "additionalProperties": false,
-            "allOf": [
-              {
-                "if": {
-                  "required": [
-                    "url"
-                  ]
-                },
-                "then": {
-                  "not": {
-                    "anyOf": [
-                      {
-                        "required": [
-                          "max_results"
-                        ]
-                      }
-                    ]
-                  }
-                }
-              }
-            ],
-            "not": {
-              "required": [
-                "url",
-                "query"
-              ]
-            },
-            "oneOf": [
-              {
-                "required": [
-                  "url"
-                ]
-              },
-              {
-                "required": [
-                  "query"
-                ]
-              }
-            ],
             "properties": {
-              "diagnose": {
-                "default": false,
-                "description": "Optional DeepSeek interpretation, priced separately; a provider failure never loses the primary result.",
-                "type": "boolean"
-              },
-              "max_results": {
-                "default": 5,
-                "description": "Search results to return in query mode.",
-                "maximum": 10,
-                "minimum": 1,
-                "type": "integer"
-              },
-              "query": {
-                "description": "Google query answered by Serper; returns real source URLs, never synthesised links. Mutually exclusive with url.",
-                "maxLength": 256,
-                "minLength": 1,
-                "type": "string"
-              },
               "url": {
-                "description": "Public HTTPS page to process. Mutually exclusive with query.",
                 "maxLength": 2048,
-                "type": "string"
+                "type": "string",
+                "description": "Public HTTPS page URL. Robots, public address and bounded response checks apply."
               }
             },
-            "type": "object"
+            "required": [
+              "url"
+            ],
+            "type": "object",
+            "description": "Tool-specific structured input object. Supply the required named fields described by its JSON Schema; source bytes must respect encoded size limits. Never include wallet private keys, passwords or API tokens."
           },
           "idempotency_key": {
             "title": "Idempotency Key",
@@ -799,87 +748,23 @@
     {
       "name": "web_extract",
       "title": "Web extract",
-      "description": "Extract one public HTTPS page or search Google then extract 1–5 actual source pages. Optional DeepSeek structured diagnostic. Separate authenticated Agent Tools relay: requires your own company Bearer API key. URL and query are mutually exclusive. Prepaid uses the shared company credit wallet; x402 produces a workload-specific payment quote. Preserve the same idempotency key, arguments and payment mode on retry; admission is not delivery. Poll job status and fetch result with SHA256 verification.",
+      "description": "Extract human-visible text from one public HTTPS page under robots and size limits. Use for readable page text, not raw document fetching (web_fetch) or SHA256 change detection (web_monitor). This is a separately authenticated company Agent Tools relay; requires a valid Bearer API key, an enabled backend operation and an accepted payment mode. x402 returns a workload-specific quote and prepaid consumes shared company credits. Retry with the SAME idempotency_key and inputs to recover, not a new job. Admission is not delivery: poll skavio_agent_job_status, retrieve through skavio_agent_job_result, and verify SHA256. No anonymous execution.",
       "inputSchema": {
         "properties": {
           "arguments": {
             "additionalProperties": false,
-            "allOf": [
-              {
-                "if": {
-                  "required": [
-                    "url"
-                  ]
-                },
-                "then": {
-                  "not": {
-                    "anyOf": [
-                      {
-                        "required": [
-                          "max_results"
-                        ]
-                      },
-                      {
-                        "required": [
-                          "fetch_top"
-                        ]
-                      }
-                    ]
-                  }
-                }
-              }
-            ],
-            "not": {
-              "required": [
-                "url",
-                "query"
-              ]
-            },
-            "oneOf": [
-              {
-                "required": [
-                  "url"
-                ]
-              },
-              {
-                "required": [
-                  "query"
-                ]
-              }
-            ],
             "properties": {
-              "diagnose": {
-                "default": false,
-                "description": "Optional DeepSeek interpretation, priced separately; a provider failure never loses the primary result.",
-                "type": "boolean"
-              },
-              "fetch_top": {
-                "default": 3,
-                "description": "In query mode, how many top real source URLs to fetch and extract.",
-                "maximum": 5,
-                "minimum": 1,
-                "type": "integer"
-              },
-              "max_results": {
-                "default": 5,
-                "description": "Search results to return in query mode.",
-                "maximum": 10,
-                "minimum": 1,
-                "type": "integer"
-              },
-              "query": {
-                "description": "Google query answered by Serper; returns real source URLs, never synthesised links. Mutually exclusive with url.",
-                "maxLength": 256,
-                "minLength": 1,
-                "type": "string"
-              },
               "url": {
-                "description": "Public HTTPS page to process. Mutually exclusive with query.",
                 "maxLength": 2048,
-                "type": "string"
+                "type": "string",
+                "description": "Public HTTPS page URL. Robots, public address and bounded response checks apply."
               }
             },
-            "type": "object"
+            "required": [
+              "url"
+            ],
+            "type": "object",
+            "description": "Tool-specific structured input object. Supply the required named fields described by its JSON Schema; source bytes must respect encoded size limits. Never include wallet private keys, passwords or API tokens."
           },
           "idempotency_key": {
             "title": "Idempotency Key",
@@ -1007,79 +892,28 @@
     {
       "name": "web_monitor",
       "title": "Web monitor",
-      "description": "Compare an HTTPS page or Serper search snapshot by SHA-256. Optional DeepSeek structured diagnostic. Separate authenticated Agent Tools relay: requires your own company Bearer API key. URL and query are mutually exclusive. Prepaid uses the shared company credit wallet; x402 produces a workload-specific payment quote. Preserve the same idempotency key, arguments and payment mode on retry; admission is not delivery. Poll job status and fetch result with SHA256 verification.",
+      "description": "Measure a public HTTPS page's content hash, optionally comparing the previous SHA256 supplied by the caller. Use for detecting changes; choose web_fetch to retrieve the document or web_extract for just visible text. This is a separately authenticated company Agent Tools relay; requires a valid Bearer API key, an enabled backend operation and an accepted payment mode. x402 returns a workload-specific quote and prepaid consumes shared company credits. Retry with the SAME idempotency_key and inputs to recover, not a new job. Admission is not delivery: poll skavio_agent_job_status, retrieve through skavio_agent_job_result, and verify SHA256. No anonymous execution.",
       "inputSchema": {
         "properties": {
           "arguments": {
             "additionalProperties": false,
-            "allOf": [
-              {
-                "if": {
-                  "required": [
-                    "url"
-                  ]
-                },
-                "then": {
-                  "not": {
-                    "anyOf": [
-                      {
-                        "required": [
-                          "max_results"
-                        ]
-                      }
-                    ]
-                  }
-                }
-              }
-            ],
-            "not": {
-              "required": [
-                "url",
-                "query"
-              ]
-            },
-            "oneOf": [
-              {
-                "required": [
-                  "url"
-                ]
-              },
-              {
-                "required": [
-                  "query"
-                ]
-              }
-            ],
             "properties": {
-              "diagnose": {
-                "default": false,
-                "description": "Optional DeepSeek interpretation, priced separately; a provider failure never loses the primary result.",
-                "type": "boolean"
-              },
-              "max_results": {
-                "default": 5,
-                "description": "Search results to return in query mode.",
-                "maximum": 10,
-                "minimum": 1,
-                "type": "integer"
-              },
               "previous_sha256": {
                 "pattern": "^[0-9a-f]{64}$",
-                "type": "string"
-              },
-              "query": {
-                "description": "Google query answered by Serper; returns real source URLs, never synthesised links. Mutually exclusive with url.",
-                "maxLength": 256,
-                "minLength": 1,
-                "type": "string"
+                "type": "string",
+                "description": "Optional previous content SHA256 to compare for changes."
               },
               "url": {
-                "description": "Public HTTPS page to process. Mutually exclusive with query.",
                 "maxLength": 2048,
-                "type": "string"
+                "type": "string",
+                "description": "Public HTTPS page URL. Robots, public address and bounded response checks apply."
               }
             },
-            "type": "object"
+            "required": [
+              "url"
+            ],
+            "type": "object",
+            "description": "Tool-specific structured input object. Supply the required named fields described by its JSON Schema; source bytes must respect encoded size limits. Never include wallet private keys, passwords or API tokens."
           },
           "idempotency_key": {
             "title": "Idempotency Key",
@@ -1207,7 +1041,7 @@
     {
       "name": "pdf_to_text",
       "title": "Pdf to text",
-      "description": "Extract selectable text from a PDF using the audited Skavio engine. Separate authenticated processing relay: requires your Agent Tools Bearer API key and an available catalog operation. Default x402 returns a workload quote; prepaid spends shared company credits. Use the same idempotency_key and inputs on retries. An admitted job is not delivered; poll skavio_agent_job_status then skavio_agent_job_result and verify SHA256. No execution when backend admission is disabled.",
+      "description": "Extract embedded selectable text from a PDF supplied as base64. Use for text-layer PDFs; use document_ocr when pages are scanned images, and invoice_extract for structured invoice fields. This is a separately authenticated company Agent Tools relay; requires a valid Bearer API key, an enabled backend operation and an accepted payment mode. x402 returns a workload-specific quote and prepaid consumes shared company credits. Retry with the SAME idempotency_key and inputs to recover, not a new job. Admission is not delivery: poll skavio_agent_job_status, retrieve through skavio_agent_job_result, and verify SHA256. No anonymous execution.",
       "inputSchema": {
         "properties": {
           "arguments": {
@@ -1228,7 +1062,8 @@
             "required": [
               "data_base64"
             ],
-            "type": "object"
+            "type": "object",
+            "description": "Tool-specific structured input object. Supply the required named fields described by its JSON Schema; source bytes must respect encoded size limits. Never include wallet private keys, passwords or API tokens."
           },
           "idempotency_key": {
             "title": "Idempotency Key",
@@ -1356,7 +1191,7 @@
     {
       "name": "document_ocr",
       "title": "Document ocr",
-      "description": "OCR a scanned document into searchable text. Separate authenticated processing relay: requires your Agent Tools Bearer API key and an available catalog operation. Default x402 returns a workload quote; prepaid spends shared company credits. Use the same idempotency_key and inputs on retries. An admitted job is not delivered; poll skavio_agent_job_status then skavio_agent_job_result and verify SHA256. No execution when backend admission is disabled.",
+      "description": "Apply optical character recognition to a scanned document supplied as base64 and return searchable extracted text. Use when the document lacks a usable text layer; use pdf_to_text for selectable PDF text and invoice_extract for invoice fields. This is a separately authenticated company Agent Tools relay; requires a valid Bearer API key, an enabled backend operation and an accepted payment mode. x402 returns a workload-specific quote and prepaid consumes shared company credits. Retry with the SAME idempotency_key and inputs to recover, not a new job. Admission is not delivery: poll skavio_agent_job_status, retrieve through skavio_agent_job_result, and verify SHA256. No anonymous execution.",
       "inputSchema": {
         "properties": {
           "arguments": {
@@ -1377,7 +1212,8 @@
             "required": [
               "data_base64"
             ],
-            "type": "object"
+            "type": "object",
+            "description": "Tool-specific structured input object. Supply the required named fields described by its JSON Schema; source bytes must respect encoded size limits. Never include wallet private keys, passwords or API tokens."
           },
           "idempotency_key": {
             "title": "Idempotency Key",
@@ -1505,7 +1341,7 @@
     {
       "name": "invoice_extract",
       "title": "Invoice extract",
-      "description": "Extract structured invoice fields from one document, priced per page with the extraction call included. Separate authenticated processing relay: requires your Agent Tools Bearer API key and an available catalog operation. Default x402 returns a workload quote; prepaid spends shared company credits. Use the same idempotency_key and inputs on retries. An admitted job is not delivered; poll skavio_agent_job_status then skavio_agent_job_result and verify SHA256. No execution when backend admission is disabled.",
+      "description": "Extract structured invoice fields from one uploaded document, with source page count verified and a per-page cost quote. Use for invoice metadata, not generic OCR (document_ocr) or plain selectable text (pdf_to_text). This is a separately authenticated company Agent Tools relay; requires a valid Bearer API key, an enabled backend operation and an accepted payment mode. x402 returns a workload-specific quote and prepaid consumes shared company credits. Retry with the SAME idempotency_key and inputs to recover, not a new job. Admission is not delivery: poll skavio_agent_job_status, retrieve through skavio_agent_job_result, and verify SHA256. No anonymous execution.",
       "inputSchema": {
         "properties": {
           "arguments": {
@@ -1526,7 +1362,8 @@
             "required": [
               "data_base64"
             ],
-            "type": "object"
+            "type": "object",
+            "description": "Tool-specific structured input object. Supply the required named fields described by its JSON Schema; source bytes must respect encoded size limits. Never include wallet private keys, passwords or API tokens."
           },
           "idempotency_key": {
             "title": "Idempotency Key",
@@ -1654,7 +1491,7 @@
     {
       "name": "audio_transcribe",
       "title": "Audio transcribe",
-      "description": "Transcribe bounded audio or video to text. Separate authenticated processing relay: requires your Agent Tools Bearer API key and an available catalog operation. Default x402 returns a workload quote; prepaid spends shared company credits. Use the same idempotency_key and inputs on retries. An admitted job is not delivered; poll skavio_agent_job_status then skavio_agent_job_result and verify SHA256. No execution when backend admission is disabled.",
+      "description": "Transcribe a bounded source audio or video file supplied as base64 to text. Use for spoken media; not for OCR, invoice parsing, or PDF content conversion. This is a separately authenticated company Agent Tools relay; requires a valid Bearer API key, an enabled backend operation and an accepted payment mode. x402 returns a workload-specific quote and prepaid consumes shared company credits. Retry with the SAME idempotency_key and inputs to recover, not a new job. Admission is not delivery: poll skavio_agent_job_status, retrieve through skavio_agent_job_result, and verify SHA256. No anonymous execution.",
       "inputSchema": {
         "properties": {
           "arguments": {
@@ -1675,7 +1512,8 @@
             "required": [
               "data_base64"
             ],
-            "type": "object"
+            "type": "object",
+            "description": "Tool-specific structured input object. Supply the required named fields described by its JSON Schema; source bytes must respect encoded size limits. Never include wallet private keys, passwords or API tokens."
           },
           "idempotency_key": {
             "title": "Idempotency Key",
@@ -1803,7 +1641,7 @@
     {
       "name": "pdf_split",
       "title": "Pdf split",
-      "description": "Split a PDF into a selected set of pages. Separate authenticated processing relay: requires your Agent Tools Bearer API key and an available catalog operation. Default x402 returns a workload quote; prepaid spends shared company credits. Use the same idempotency_key and inputs on retries. An admitted job is not delivered; poll skavio_agent_job_status then skavio_agent_job_result and verify SHA256. No execution when backend admission is disabled.",
+      "description": "Select one-based page numbers from an uploaded PDF and return a new document containing those pages. Use to extract pages; use pdf_merge to concatenate two to five whole PDFs or pdf_to_text for reading text. This is a separately authenticated company Agent Tools relay; requires a valid Bearer API key, an enabled backend operation and an accepted payment mode. x402 returns a workload-specific quote and prepaid consumes shared company credits. Retry with the SAME idempotency_key and inputs to recover, not a new job. Admission is not delivery: poll skavio_agent_job_status, retrieve through skavio_agent_job_result, and verify SHA256. No anonymous execution.",
       "inputSchema": {
         "properties": {
           "arguments": {
@@ -1836,7 +1674,8 @@
               "data_base64",
               "pages"
             ],
-            "type": "object"
+            "type": "object",
+            "description": "Tool-specific structured input object. Supply the required named fields described by its JSON Schema; source bytes must respect encoded size limits. Never include wallet private keys, passwords or API tokens."
           },
           "idempotency_key": {
             "title": "Idempotency Key",
@@ -1964,7 +1803,7 @@
     {
       "name": "pdf_merge",
       "title": "Pdf merge",
-      "description": "Merge two to five PDFs into one document. Separate authenticated processing relay: requires your Agent Tools Bearer API key and an available catalog operation. Default x402 returns a workload quote; prepaid spends shared company credits. Use the same idempotency_key and inputs on retries. An admitted job is not delivered; poll skavio_agent_job_status then skavio_agent_job_result and verify SHA256. No execution when backend admission is disabled.",
+      "description": "Combine two to five uploaded base64-encoded PDF documents into one output document, preserving the supplied order. Use to concatenate files; use pdf_split to select pages from one PDF or pdf_to_text to extract text. This is a separately authenticated company Agent Tools relay; requires a valid Bearer API key, an enabled backend operation and an accepted payment mode. x402 returns a workload-specific quote and prepaid consumes shared company credits. Retry with the SAME idempotency_key and inputs to recover, not a new job. Admission is not delivery: poll skavio_agent_job_status, retrieve through skavio_agent_job_result, and verify SHA256. No anonymous execution.",
       "inputSchema": {
         "properties": {
           "arguments": {
@@ -1990,7 +1829,8 @@
             "required": [
               "inputs_base64"
             ],
-            "type": "object"
+            "type": "object",
+            "description": "Tool-specific structured input object. Supply the required named fields described by its JSON Schema; source bytes must respect encoded size limits. Never include wallet private keys, passwords or API tokens."
           },
           "idempotency_key": {
             "title": "Idempotency Key",
@@ -2366,9 +2206,11 @@
       }
     }
   ],
-  "resources": [],
-  "prompts": [],
-  "description": "Base USDC x402 verification/match/PDF/DNS-TLS, plus three authenticated Agent Tools HTTPS or Serper query web-processing relays with optional DeepSeek.",
-  "x-agentToolsEndpoint": "https://www.skavio.eu/agent-tools/mcp",
-  "x-agentToolsAuth": "Requires own Skavio company Bearer API key; prepaid credits or available x402 workload quote."
+  "provenance": {
+    "endpoint": "https://getskavio.com/mcp",
+    "method": "tools/list",
+    "checkedAt": "2026-10-29",
+    "dataHandling": "guides/public-usdc-mcp-integration-facts.md",
+    "repositoryScope": "metadata and documentation only"
+  }
 }

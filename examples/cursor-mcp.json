@@ -2,7 +2,7 @@
   "mcpServers": {
     "skavio-paid-tools": {
       "type": "http",
-      "url": "https://www.skavio.eu/mcp"
+      "url": "https://getskavio.com/mcp"
     }
   }
 }
