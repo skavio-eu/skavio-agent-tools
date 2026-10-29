@@ -6,7 +6,7 @@
 ## Canonical source, endpoint and versions
 
 - **Canonical MCP Streamable HTTP endpoint:** `https://getskavio.com/mcp`
-- **Legacy working alias:** `https://getskavio.com/mcp` (same observed tools and runtime during the 29 Oct 2026 free handshake). New clients should use the canonical endpoint.
+- **Legacy working alias:** `https://www.skavio.eu/mcp` (same observed tools and runtime during the 29 Oct 2026 free handshake). New clients should use the canonical endpoint.
 - **Official registry namespace:** `eu.skavio/paid-micro-apis`. A registry **descriptor version** (e.g. 1.1.4 or 1.1.5) is a publication revision, **not** the live server runtime version.
 - **Runtime version** returned by MCP `initialize` during this verification: **1.30.0**.
 - **Published source metadata:** [repository](https://github.com/skavio-eu/skavio-agent-tools), [registry](https://registry.modelcontextprotocol.io/v0.1/servers/eu.skavio%2Fpaid-micro-apis/versions/latest).
