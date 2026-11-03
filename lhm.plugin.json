@@ -1,0 +1,30 @@
+{
+  "identifier": "skavio-eu-skavio-agent-tools",
+  "name": "Skavio USDC Payment Verification & Proof MCP",
+  "version": "1.1.5",
+  "author": "Skavio LLC",
+  "authorUrl": "https://github.com/skavio-eu",
+  "homepage": "https://getskavio.com/x402/",
+  "cloudEndpoint": "https://getskavio.com/mcp",
+  "description": "18 MCP tools for verifiable native Circle USDC payments with x402 v2 on Base and Solana: transaction verification, recipient/amount matching, blockchain payment evidence PDF, DNS/TLS verification and agent utilities. Public discovery is free; paid operations use wallet-signed x402. No custody. Evidence PDF is not a tax invoice. Standalone HTTP payment endpoints are separate and Base-only.",
+  "tags": [
+    "x402",
+    "usdc",
+    "base",
+    "solana",
+    "payments",
+    "payment-verification",
+    "blockchain",
+    "pdf",
+    "payment-proof",
+    "payment-reconciliation",
+    "crypto-payments",
+    "web3",
+    "agents",
+    "mcp",
+    "finance",
+    "dns",
+    "tls",
+    "ai-tools"
+  ]
+}
