@@ -1,0 +1,16 @@
+{
+  "name": "skavio-x402-safe-buyer-example",
+  "private": true,
+  "type": "module",
+  "description": "Opt-in x402 Base USDC buyer example; free quote mode by default",
+  "scripts": {
+    "preview": "node skavio-x402.mjs --preview",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@x402/fetch": "2.30.0",
+    "@x402/evm": "2.30.0",
+    "viem": "^2.37.0"
+  },
+  "engines": {"node": ">=22"}
+}

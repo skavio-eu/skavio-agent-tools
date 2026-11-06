@@ -1,5 +1,9 @@
 # Skavio Agent Tools
 
+
+**New verified integration:** [Safe x402 buyer example — Node.js + Python](examples/x402-safe-buyer/README.md). Free live HTTP 402 preview with no signup or wallet, plus opt-in Base USDC paid adapter with a per-call limit. No funded purchase is made by default. [No-account visual examples](https://getskavio.com/demo/).
+
+
 [![Skavio USDC Paid Micro-APIs MCP server — mcprush tool-list rating](https://mcprush.com/badge/skavio-usdc-paid-micro-apis-mcp/card.svg)](https://mcprush.com/to/skavio-usdc-paid-micro-apis-mcp?ref=badge)
 
 Official connection metadata and documentation for Skavio LLC's hosted MCP tools and x402 HTTP API. This repository contains discovery metadata, not the production server source.
