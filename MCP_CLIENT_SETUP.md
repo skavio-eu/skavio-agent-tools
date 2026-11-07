@@ -11,6 +11,13 @@
 
 These two servers are **not interchangeable**. In particular, being connected to an MCP server does not itself authorize x402 payments.
 
+### Card-funded processing: a separate authenticated Agent Tools MCP
+
+The Agent Tools customer server is at `https://getskavio.com/agent-tools/mcp` with an authorized Agent Tools company key and `payment_mode=prepaid` for supported processing jobs. In a signed-in [Agent Tools Dashboard](https://getskavio.com/agent-tools/dashboard.html), a company administrator selects **Buy credits by card** ($5–$500 fixed USD packs) and confirms in Stripe. After verified payment, credits fund the same company wallet at **1 USD = 1,000 credits**; alternatively use USDC. Card checkout cannot be initiated by an MCP tool.
+
+**Limits:** the four independent blockchain proof/DNS tools on `https://getskavio.com/mcp`, plus paid x402 HTTP routes, remain x402/native-USDC only. The distinct OAuth Processing MCP `https://getskavio.com/processing/mcp` spends its own correctly linked company credits and requires its own authorization. Only Stripe TEST unpaid checkout and synthetic ledger verification have passed; a real paid external customer card-to-MCP result has not been proven.
+
+
 ## Cursor (remote HTTP)
 
 Create a project-level `.cursor/mcp.json` or a global `~/.cursor/mcp.json`. Copy [this tested JSON format](examples/cursor-mcp.json):

@@ -8,6 +8,15 @@
 
 Official connection metadata and documentation for Skavio LLC's hosted MCP tools and x402 HTTP API. This repository contains discovery metadata, not the production server source.
 
+## Card-funded Agent Tools processing (no crypto wallet)
+
+For authenticated **Agent Tools document, OCR, invoice and audio processing**, an administrator signs in to the [Agent Tools Dashboard](https://getskavio.com/agent-tools/dashboard.html), selects **Buy credits by card**, chooses **$5, $10, $20, $50, $100, $200 or $500**, and completes a Stripe-hosted checkout. Verified settlement funds that **same bound company wallet** at **1 USD = 1,000 credits**. Eligible jobs can then use the company's Agent Tools key with `payment_mode=prepaid`. USDC top-ups remain available.
+
+**Do not mix payment rails:** the separate company Agent Tools MCP endpoint is `https://getskavio.com/agent-tools/mcp`, and OAuth Processing MCP is `https://getskavio.com/processing/mcp`. The four independently priced blockchain verification/DNS tools on `https://getskavio.com/mcp` and the paid HTTP x402 routes **still require native USDC via x402**. Card credits do not authorize those four calls, and neither MCP credential can initiate card charges.
+
+**Verification as of November 7, 2026:** card checkout interface and private company binding deployed, isolated security and transactional ledger tests passed, and a Stripe TEST-mode unpaid $5 checkout was created and expired. A real paid external card-to-MCP completed job E2E has **not yet been verified**. [Agent Tools docs](https://getskavio.com/agent-tools/docs.html) · [Prices](https://getskavio.com/agent-tools/pricing.html).
+
+
 **Partner review / data-handling facts:** [public USDC MCP integration facts](guides/public-usdc-mcp-integration-facts.md). Maintainer: Skavio LLC; email: info@getskavio.com. GitHub contains metadata and documentation, **not** production source. Live runtime reports `1.30.0`; registry descriptor `1.1.5` is independently versioned.
 
 **New practical guide:** [Verify an incoming USDC transfer from an AI agent using x402](guides/verify-usdc-with-x402.md) — live 0.02/0.03/0.05 USDC operation prices, free HTTP 402 discovery and payment-safe steps. [Try the hosted endpoint](https://getskavio.com/x402/?utm_source=github&utm_medium=readme&utm_campaign=x402_developers_20261023).
