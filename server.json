@@ -1,13 +1,13 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "eu.skavio/paid-micro-apis",
-  "description": "18 tools: USDC verification, matching, evidence PDFs, DNS/TLS and authenticated company processing.",
+  "description": "USDC x402 proof/DNS and authenticated prepaid OCR, document and audio processing via card or USDC.",
   "title": "Skavio USDC Payment Verification & Proof MCP",
   "repository": {
     "url": "https://github.com/skavio-eu/skavio-agent-tools",
     "source": "github"
   },
-  "version": "1.1.5",
+  "version": "1.1.6",
   "websiteUrl": "https://getskavio.com/x402/",
   "remotes": [
     {
@@ -40,7 +40,8 @@
           "audio_transcribe"
         ],
         "pricing": "https://getskavio.com/agent-tools/api/pricing",
-        "provider_note": "Google search via DeepSeek/Serper providers and optional DeepSeek interpretation; extra costs quoted when used"
+        "provider_note": "Google search via DeepSeek/Serper providers and optional DeepSeek interpretation; extra costs quoted when used",
+        "creditFunding": "Prepaid company credits: card top-up ($5-$500 USD) via https://getskavio.com/agent-tools/dashboard.html or native USDC, only for correctly bound authenticated processing jobs. Not for four standalone x402 proof/DNS calls."
       },
       "documentation": "https://getskavio.com/x402/docs/",
       "inspectionNetworks": [
@@ -52,7 +53,7 @@
         "avalanche",
         "solana"
       ],
-      "limitations": "Public discovery is free; 4 paid MCP tools require x402 MCP v2 native USDC on Base or Solana. Separate company processing requires Bearer credentials and credit/quotes. Blockchain inspection covers seven chains; standalone x402 HTTP payments settle Base only. Evidence PDF is not a tax invoice. No custody, no private keys. RPC availability and finality vary; published privacy covers category-specific log/payment retention.",
+      "limitations": "Public discovery is free; 4 paid MCP tools require x402 MCP v2 native USDC on Base or Solana. Separate company processing requires Bearer credentials and credit/quotes. Blockchain inspection covers seven chains; standalone x402 HTTP payments settle Base only. Evidence PDF is not a tax invoice. No custody, no private keys. RPC availability and finality vary; published privacy covers category-specific log/payment retention. The four native-USDC proof/DNS MCP tools do NOT accept card credits. Separate authenticated Agent Tools processing supports prepaid company credits and administrator-operated Stripe card or USDC topup; actual external paid card-to-MCP E2E not yet independently confirmed.",
       "payment": {
         "asset": "Native Circle USDC on Base (ERC-20) or Solana (SPL; EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v)",
         "client_requirement": "x402 MCP v2 wallet extension; params._meta[x402/payment]",
