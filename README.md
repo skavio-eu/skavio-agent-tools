@@ -1,5 +1,8 @@
 # Skavio Agent Tools
 
+**New customer MCP access (9 November 2026):** [Open the Agent Tools Dashboard](https://getskavio.com/agent-tools/dashboard.html) to register a company or select **Continue with Skavio account** using a verified main Skavio login. Existing Agent Tools company accounts must be explicitly linked after signing in to **both** accounts; matching email alone never grants access. Issue an Agent Tools API key and connect to **`https://getskavio.com/agent-tools/mcp`**. Main website credits and Agent Tools company wallets are separate and are **not** merged. The old `/processing/mcp` requires operator-provisioned access; it is not self-service. [Live API guide](https://getskavio.com/agent-tools/docs.html). A real external customer-funded card-to-delivered-MCP-job workflow is not yet independently verified.
+
+
 
 **New verified integration:** [Safe x402 buyer example — Node.js + Python](examples/x402-safe-buyer/README.md). Free live HTTP 402 preview with no signup or wallet, plus opt-in Base USDC paid adapter with a per-call limit. No funded purchase is made by default. [No-account visual examples](https://getskavio.com/demo/).
 
