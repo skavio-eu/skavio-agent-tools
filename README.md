@@ -4,6 +4,8 @@
 
 
 
+**API key handling:** Store the Agent Tools company API key in your MCP client's secret manager and send it only over HTTPS as `Authorization: Bearer <your-key>`. Never commit keys to GitHub or include them in issue reports. Credentials for `/processing/mcp` are separate.
+
 **New verified integration:** [Safe x402 buyer example — Node.js + Python](examples/x402-safe-buyer/README.md). Free live HTTP 402 preview with no signup or wallet, plus opt-in Base USDC paid adapter with a per-call limit. No funded purchase is made by default. [No-account visual examples](https://getskavio.com/demo/).
 
 
